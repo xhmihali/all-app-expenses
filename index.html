@@ -71,9 +71,9 @@ header.top { display: flex; align-items: center; justify-content: space-between;
 
 .note { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 10px; margin-bottom: 14px; font-size: 14px; }
 
-.grid { display: grid; gap: 14px; grid-template-columns: 1fr; grid-template-areas: "hero" "add" "cats" "list" "save" "backup"; }
+.grid { display: grid; gap: 14px; grid-template-columns: 1fr; grid-template-areas: "hero" "add" "cats" "list" "fixed" "save" "backup"; }
 @media (min-width: 880px) {
-  .grid { grid-template-columns: 1.3fr 1fr; grid-template-areas: "hero add" "list cats" "list save" "list backup"; align-items: start; }
+  .grid { grid-template-columns: 1.3fr 1fr; grid-template-areas: "hero add" "list cats" "list fixed" "list save" "list backup"; align-items: start; }
 }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px; min-width: 0; }
 .card h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 12px; display: flex; justify-content: space-between; gap: 8px; }
@@ -190,6 +190,15 @@ details.manual[open] summary::before { content: "− "; }
 /* ---------- Savings ---------- */
 #save { grid-area: save; }
 #backup { grid-area: backup; }
+#fixedCard { grid-area: fixed; }
+#fixedCard .empty { margin-bottom: 8px; }
+#applyFixedBtn { margin-top: 12px; width: 100%; }
+.famt { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; white-space: nowrap; }
+.fdel { border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 8px; font-size: 13px; min-width: 28px; height: 28px; }
+.fdel:hover { color: var(--accent); background: var(--soft); }
+.fdel.armed { color: var(--accent-ink); background: var(--accent); padding: 0 8px; }
+.cat .pc { display: block; }
+.basetag { font-size: 11px; font-weight: 600; color: var(--good); }
 .sbars { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 8px; align-items: end; margin-bottom: 10px; }
 .sb { display: grid; gap: 4px; justify-items: center; text-align: center; }
 .sb .sv { font-size: 11.5px; font-weight: 600; color: var(--good); white-space: nowrap; }
@@ -309,6 +318,29 @@ details.manual[open] summary::before { content: "− "; }
       <div class="catlist" id="catlist"></div>
     </section>
 
+    <!-- FIXED -->
+    <section class="card" id="fixedCard" aria-label="Shpenzime bazë">
+      <h2>Shpenzime bazë <small id="fixedTotal"></small></h2>
+      <p class="empty" id="fixedStatus">Futen vetë më 1 të çdo muaji.</p>
+      <div class="catlist" id="fixedList"></div>
+      <button class="btn primary" type="button" id="applyFixedBtn" hidden></button>
+      <details class="manual">
+        <summary>Shto shpenzim bazë</summary>
+        <form class="mform" id="fform">
+          <label class="f full" for="fNote">Emri
+            <input type="text" id="fNote" maxlength="80" placeholder="p.sh. Qeraja" required>
+          </label>
+          <label class="f" for="fAmount">Shuma (lekë)
+            <input type="number" id="fAmount" min="0" step="any" inputmode="decimal" required>
+          </label>
+          <label class="f" for="fCat">Kategoria
+            <select id="fCat"></select>
+          </label>
+          <div class="actions"><button class="btn primary" type="submit">Shto te bazat</button></div>
+        </form>
+      </details>
+    </section>
+
     <!-- SAVINGS -->
     <section class="card" id="save" aria-label="Kursimet">
       <h2>Kursimet <small id="saveTotal"></small></h2>
@@ -359,6 +391,8 @@ details.manual[open] summary::before { content: "− "; }
   var salaries = new Map();  // "YYYY-MM" -> amount
   var viewMonth = ym(new Date());
   var editingId = null, pending = [], pendingSalary = null;
+  var fixed = [];          // [{id, amount, cat, note}]
+  var fixedApplied = {};   // "YYYY-MM" -> true
   var storageOk = true, firstPaint = true;
 
   // ---------- helpers ----------
@@ -410,11 +444,13 @@ details.manual[open] summary::before { content: "− "; }
       var d = JSON.parse(raw);
       items = new Map(Object.entries(d.items || {}));
       salaries = new Map(Object.entries(d.salaries || {}));
+      fixed = Array.isArray(d.fixed) ? d.fixed : [];
+      fixedApplied = d.fixedApplied || {};
     } catch (e) { storageOk = false; }
   }
   function persist() {
     try {
-      var d = { v: 1, savedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries) };
+      var d = { v: 1, savedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries), fixed: fixed, fixedApplied: fixedApplied };
       localStorage.setItem(KEY, JSON.stringify(d));
       return true;
     } catch (e) {
@@ -466,7 +502,7 @@ details.manual[open] summary::before { content: "− "; }
       $("sub").innerHTML = "nga <b>" + fmt(salary) + " L</b> rrogë · shpenzuar <b>" + fmt(spent) + " L</b>";
       var tag = $("tag");
       if (left < 0) { tag.textContent = "Mbi rrogë"; tag.className = "tag bad"; tag.hidden = false; }
-      else if (isCur && salary > 0 && spent / salary > (now.getDate() / dim) + 0.1) { tag.textContent = "Po shpenzon shpejt"; tag.className = "tag"; tag.hidden = false; }
+      else if (isCur && salary > 0 && (function () { var fx = sum(list.filter(function (e) { return e.fixed; })); var free = salary - fx; return free > 0 && (spent - fx) / free > (now.getDate() / dim) + 0.1; })()) { tag.textContent = "Po shpenzon shpejt"; tag.className = "tag"; tag.hidden = false; }
       else tag.hidden = true;
 
       var bc = byCat(list);
@@ -519,7 +555,7 @@ details.manual[open] summary::before { content: "− "; }
         }
         var c = CAT[e.cat] || CAT.tjeter;
         h += "<div class=\"tx\"><div class=\"ico\" style=\"background:" + c.color + "\" aria-hidden=\"true\">" + c.ab + "</div>" +
-          "<div class=\"who\" data-edit=\"" + esc(e.id) + "\" role=\"button\" tabindex=\"0\" title=\"Prek për ta ndryshuar\"><div class=\"t\">" + esc(e.note || c.name) + "</div><div class=\"c\">" + esc(c.name) + "</div></div>" +
+          "<div class=\"who\" data-edit=\"" + esc(e.id) + "\" role=\"button\" tabindex=\"0\" title=\"Prek për ta ndryshuar\"><div class=\"t\">" + esc(e.note || c.name) + "</div><div class=\"c\">" + esc(c.name) + (e.fixed ? " · <span class=\"basetag\">bazë</span>" : "") + "</div></div>" +
           "<div class=\"a\"><span class=\"m\">−" + fmt(e.amount) + " L</span>" + (salAmt ? "<span class=\"bal" + (bal[e.id] < 0 ? " neg" : "") + "\">mbeten " + fmt(bal[e.id]) + "</span>" : "") + "</div>" +
           "<button type=\"button\" class=\"del\" data-del=\"" + esc(e.id) + "\" aria-label=\"Fshi\">✕</button></div>";
       });
@@ -527,8 +563,40 @@ details.manual[open] summary::before { content: "− "; }
     }
 
     renderSavings();
+    renderFixed();
     $("dataInfo").textContent = items.size ? items.size + " shpenzime gjithsej" : "";
     firstPaint = false;
+  }
+
+  // ----- shpenzimet bazë
+  function fixedTotal() { return fixed.reduce(function (s, f) { return s + f.amount; }, 0); }
+  function renderFixed() {
+    var cur = ym(new Date());
+    $("fixedTotal").textContent = fixed.length ? fmt(fixedTotal()) + " L / muaj" : "";
+    $("fixedList").innerHTML = fixed.length ? fixed.map(function (f) {
+      var c = CAT[f.cat] || CAT.tjeter;
+      return "<div class=\"cat\"><span class=\"dot\" style=\"background:" + c.color + "\"></span><span>" + esc(f.note || c.name) + "<span class=\"pc\">" + esc(c.name) + "</span></span><span class=\"famt\"><span class=\"amt\">" + fmt(f.amount) + " L</span><button type=\"button\" class=\"del fdel\" data-fdel=\"" + esc(f.id) + "\" aria-label=\"Hiq nga bazat\">✕</button></span></div>";
+    }).join("") : "<p class=\"empty\">Ende pa shpenzime bazë. Shto qiranë, kredinë, faturat…</p>";
+    var btn = $("applyFixedBtn");
+    var can = fixed.length && viewMonth <= cur && !fixedApplied[viewMonth];
+    btn.hidden = !can;
+    if (can) btn.textContent = "Shto bazat për " + monthName(viewMonth) + " · −" + fmt(fixedTotal()) + " L";
+    $("fixedStatus").textContent = fixed.length && fixedApplied[viewMonth] ? "✓ Të shtuara për " + monthName(viewMonth) + "." : "Futen vetë më 1 të çdo muaji.";
+  }
+  function applyFixed(m) {
+    var now = Date.now();
+    fixed.forEach(function (f, i) {
+      items.set(newId(), { kind: "expense", amount: f.amount, cat: f.cat, note: f.note, date: m + "-01", month: m, createdAt: now + i, fixed: true });
+    });
+    fixedApplied[m] = true;
+    persist();
+  }
+  function autoApplyFixed() {
+    var cur = ym(new Date());
+    if (fixed.length && !fixedApplied[cur]) {
+      applyFixed(cur);
+      toast("U shtuan shpenzimet bazë të " + monthGen(cur) + ": −" + fmt(fixedTotal()) + " L");
+    }
   }
 
   // ----- savings: 6 muajt deri te muaji që po sheh
@@ -646,7 +714,7 @@ details.manual[open] summary::before { content: "− "; }
 
   // ---------- Backup ----------
   $("exportBtn").addEventListener("click", function () {
-    var d = { app: "ALL – Expenses & Saving", v: 1, exportedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries) };
+    var d = { app: "ALL – Expenses & Saving", v: 1, exportedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries), fixed: fixed, fixedApplied: fixedApplied };
     var blob = new Blob([JSON.stringify(d, null, 1)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -668,8 +736,10 @@ details.manual[open] summary::before { content: "− "; }
           if (v && typeof v.amount === "number" && /^\d{4}-\d{2}-\d{2}$/.test(v.date || "")) { if (!items.has(id)) added++; items.set(id, v); }
         });
         Object.keys(d.salaries || {}).forEach(function (m) { if (typeof d.salaries[m] === "number") salaries.set(m, d.salaries[m]); });
-        persist(); firstPaint = true; render();
-        toast("Backup-i u ngarkua: " + added + " shpenzime të reja.");
+        if (Array.isArray(d.fixed)) fixed = d.fixed.filter(function (f) { return f && typeof f.amount === "number" && f.amount > 0; });
+        Object.keys(d.fixedApplied || {}).forEach(function (m) { fixedApplied[m] = true; });
+        persist(); firstPaint = true; autoApplyFixed(); render();
+        toast("Backup-i u ngarkua: " + added + " shpenzime të reja" + (fixed.length ? ", " + fixed.length + " shpenzime bazë." : "."));
       } catch (e) { toast("Ky skedar nuk është backup i ALL."); }
       ev.target.value = "";
     };
@@ -718,7 +788,7 @@ details.manual[open] summary::before { content: "− "; }
       if (!(amt > 0)) return;
       if (/rrog/.test(low)) { salary = amt; return; }
       var foreign = /€|euro|\beur\b/.test(low) ? "EUR" : (/\$|dollar/.test(low) ? "USD" : null);
-      var noteTxt = s.replace(m[0], " ").replace(/[€$]/g, " ").replace(STOP, " ").replace(/(^|\s)[ëçË](?=\s|$)/g, " ").replace(/\s+/g, " ").trim();
+      var noteTxt = s.replace(m[0], " ").replace(/[€$]/g, " ").replace(STOP, " ").replace(/\s+/g, " ").trim();
       var cat = guessCat(s);
       if (noteTxt) noteTxt = noteTxt.charAt(0).toUpperCase() + noteTxt.slice(1);
       out.push({ amount: Math.round(amt * 100) / 100, cat: cat, note: noteTxt.slice(0, 120), date: curDate, foreign: foreign });
@@ -772,10 +842,40 @@ details.manual[open] summary::before { content: "− "; }
     render();
   });
 
+  // ---------- shpenzimet bazë: veprimet ----------
+  var fCat = $("fCat");
+  fCat.innerHTML = CATS.map(function (c) { return "<option value=\"" + c.id + "\">" + esc(c.name) + "</option>"; }).join("");
+  $("fform").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var amount = parseFloat($("fAmount").value), noteTxt = $("fNote").value.trim();
+    if (!(amount > 0) || !noteTxt) { toast("Shkruaj emrin dhe shumën."); return; }
+    fixed.push({ id: "f" + Date.now().toString(36), amount: amount, cat: fCat.value, note: noteTxt });
+    persist(); $("fform").reset(); render();
+    toast("U shtua te bazat. Nga muaji tjetër futet vetë.");
+  });
+  var fArmed = null, fArmT;
+  $("fixedList").addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-fdel]"); if (!b) return;
+    var id = b.getAttribute("data-fdel");
+    if (fArmed === id) {
+      fArmed = null; clearTimeout(fArmT);
+      fixed = fixed.filter(function (f) { return f.id !== id; }); persist(); render();
+      toast("U hoq nga bazat. Shpenzimet e muajve të kaluar mbeten.");
+      return;
+    }
+    fArmed = id; b.classList.add("armed"); b.textContent = "Hiq?";
+    clearTimeout(fArmT); fArmT = setTimeout(function () { fArmed = null; b.classList.remove("armed"); b.textContent = "✕"; }, 3000);
+  });
+  $("applyFixedBtn").addEventListener("click", function () {
+    applyFixed(viewMonth); render();
+    toast("−" + fmt(fixedTotal()) + " L shpenzime bazë për " + monthName(viewMonth));
+  });
+
   // ---------- start ----------
   load();
   if (!storageOk) note("Ky shfletues nuk lejon ruajtjen. Hape nga ikona ALL ose nga Chrome.");
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
+  autoApplyFixed();
   render();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 })();
