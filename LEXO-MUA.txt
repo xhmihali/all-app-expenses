@@ -1,0 +1,38 @@
+ALL – Expenses & Saving · Launcher me ikonë
+==========================================
+
+Çfarë është:
+Një faqe e vogël (PWA) me ikonën ALL. E instalon në telefon ose kompjuter,
+dhe kur e hap nga ikona të çon direkt te aplikacioni yt në Claude:
+https://claude.ai/artifact/UKfZ73Gfxt2RoYcQoSYhuv
+
+Të dhënat dhe Claude mbeten aty ku janë, kjo vetëm e hap me ikonën tënde.
+
+1) Publikoje (falas, 2 minuta) — zgjidh njërën:
+
+   A. Netlify Drop (më e shpejta)
+      - Hap https://app.netlify.com/drop
+      - Tërhiq gjithë dosjen "all-app" brenda faqes
+      - Merr linkun që të jep (p.sh. https://xxxx.netlify.app)
+
+   B. GitHub Pages
+      - Krijo një repo të ri (p.sh. "all-app") dhe ngarko të gjithë skedarët
+      - Settings → Pages → Branch: main / root → Save
+      - Linku: https://<username>.github.io/all-app/
+
+   Duhet patjetër HTTPS (të dyja e kanë vetë).
+
+2) Instaloje:
+   - iPhone: hape linkun në Safari → Share → Add to Home Screen
+   - Android: hape në Chrome → ⋮ → Install app (ose Add to Home screen)
+   - Kompjuter (Chrome/Edge): ikona e instalimit në shiritin e adresës
+
+3) Hape nga ikona ALL. Herën e parë hyr në llogarinë Claude në atë shfletues.
+
+Skedarët:
+   index.html            faqja që hapet dhe të ridrejton
+   manifest.webmanifest  emri, ngjyrat dhe ikonat e aplikacionit
+   sw.js                 e bën të instalueshëm
+   icon-192/512.png      ikonat për Android/kompjuter
+   apple-touch-icon.png  ikona për iPhone
+   favicon.png, logo.png

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALL – Expenses &amp; Saving</title>
+<meta name="description" content="Rroga, shpenzimet dhe kursimet e muajit.">
+<meta name="theme-color" content="#0F2032">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ALL">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root { --bg: #0F2032; --ink: #F3F6F9; --muted: #93A6BA; --accent: #D0182F; --good: #4EC48C; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(circle at 85% 8%, rgba(208,24,47,.45), transparent 45%), linear-gradient(160deg, #17304A, #0A1724);
+    color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: grid; place-items: center; text-align: center;
+    padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  }
+  main { display: grid; gap: 16px; justify-items: center; max-width: 360px; }
+  img { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 12px 40px rgba(0,0,0,.4); }
+  h1 { margin: 6px 0 0; font-size: 26px; letter-spacing: -.01em; }
+  p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  a.go {
+    display: inline-block; margin-top: 8px; background: var(--accent); color: #fff; text-decoration: none;
+    font-weight: 600; padding: 14px 26px; border-radius: 14px; font-size: 16px;
+  }
+  a.go:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .help { margin-top: 10px; font-size: 13px; color: var(--muted); border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; }
+  .help b { color: var(--ink); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<main>
+  <img src="logo.png" alt="Logo ALL">
+  <h1>ALL</h1>
+  <p>Expenses &amp; Saving</p>
+  <a class="go" id="go" href="#">Hap aplikacionin</a>
+  <p id="status" hidden><span class="dot"></span>Po hapet…</p>
+  <div class="help" id="help">
+    Për ta pasur si aplikacion me ikonë:<br>
+    <b>iPhone</b>: Safari → Share → <b>Add to Home Screen</b><br>
+    <b>Android</b>: Chrome → ⋮ → <b>Install app</b> / <b>Add to Home screen</b>
+  </div>
+</main>
+<script>
+  // Linku i aplikacionit në Claude
+  var APP_URL = "https://claude.ai/artifact/UKfZ73Gfxt2RoYcQoSYhuv";
+
+  document.getElementById("go").href = APP_URL;
+
+  var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  if (standalone) {
+    // I hapur nga ikona në ekran: shko direkt te aplikacioni.
+    document.getElementById("help").hidden = true;
+    document.getElementById("status").hidden = false;
+    location.replace(APP_URL);
+  }
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
+</script>
+</body>
+</html>
