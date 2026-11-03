@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Rroga si një shirit që hahet nga shpenzimet. Karta kryesore është gjithmonë blu nate; pjesa tjetër e qetë, gri e ftohtë. */
+  /* ALL: rroga si shirit që hahet nga shpenzimet. Karta kryesore blu nate; pjesa tjetër e qetë, gri e ftohtë. Aplikacion telefoni: një kolonë, menu poshtë, butoni + i kuq. */
   --bg: #EDF0F3;
   --surface: #FFFFFF;
   --ink: #142231;
@@ -32,80 +32,94 @@
   --hero-ink: #F3F6F9;
   --hero-muted: #93A6BA;
   --hero-line: rgba(255,255,255,.14);
+  --heat: 208, 24, 47;
   --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --font-body: "Onest", "Segoe UI", system-ui, sans-serif;
+  --nav-h: 64px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0A1119; --surface: #121C27; --ink: #E5EBF1; --muted: #8E9DAD; --line: #223040; --soft: #182433;
-    --accent: #F2505F; --accent-ink: #14070A; --good: #4EC48C;
-    --hero: #13273C; --hero-line: rgba(255,255,255,.12); color-scheme: dark;
+    --accent: #F2505F; --accent-ink: #14070A; --good: #4EC48C; --hero: #13273C; --hero-line: rgba(255,255,255,.12);
+    --heat: 242, 80, 95; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0A1119; --surface: #121C27; --ink: #E5EBF1; --muted: #8E9DAD; --line: #223040; --soft: #182433;
-  --accent: #F2505F; --accent-ink: #14070A; --good: #4EC48C;
-  --hero: #13273C; --hero-line: rgba(255,255,255,.12); color-scheme: dark;
+  --accent: #F2505F; --accent-ink: #14070A; --good: #4EC48C; --hero: #13273C; --hero-line: rgba(255,255,255,.12);
+  --heat: 242, 80, 95; color-scheme: dark;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; }
-body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; overscroll-behavior-y: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
 input, select, textarea { font-size: 16px; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 [hidden] { display: none !important; }
+svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-.wrap { max-width: 1080px; margin: 0 auto; padding: 18px 16px 56px; }
-header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-.brand { font-family: var(--font-display); font-size: 28px; line-height: 1; letter-spacing: -0.01em; margin: 0; }
-.brand em { color: var(--accent); }
-.brandsub { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.app { max-width: 560px; margin: 0 auto; padding: max(14px, env(safe-area-inset-top)) 16px calc(var(--nav-h) + var(--safe-b) + 96px); }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .brandwrap { display: flex; align-items: center; gap: 10px; }
 .brandwrap img { width: 38px; height: 38px; border-radius: 10px; display: block; box-shadow: 0 4px 14px rgba(15,32,50,.25); }
-.monthnav { display: flex; align-items: center; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-.monthnav button { border: 0; background: transparent; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; color: var(--muted); }
-.monthnav button:hover { background: var(--soft); color: var(--ink); }
-.monthnav .label { min-width: 118px; text-align: center; font-weight: 600; font-size: 14px; }
+.brand { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1; margin: 0; }
+.brandsub { display: block; font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+.brandsub em { color: var(--accent); font-style: normal; }
+.viewtitle { font-size: 13px; font-weight: 600; color: var(--muted); }
 
 .note { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 10px; margin-bottom: 14px; font-size: 14px; }
+.view { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; animation: viewin .25s ease-out; }
+.view > * { min-width: 0; }
+@keyframes viewin { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-.grid { display: grid; gap: 14px; grid-template-columns: 1fr; grid-template-areas: "hero" "add" "cats" "list" "fixed" "save" "backup"; }
-@media (min-width: 880px) {
-  .grid { grid-template-columns: 1.3fr 1fr; grid-template-areas: "hero add" "list cats" "list fixed" "list save" "list backup"; align-items: start; }
-}
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px; min-width: 0; }
-.card h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 12px; display: flex; justify-content: space-between; gap: 8px; }
-.card h2 small { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; min-width: 0; }
+.card h2 { font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.card h2 small { text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 13px; }
+.empty { color: var(--muted); font-size: 14px; margin: 0; }
+.muted { color: var(--muted); }
+
+/* ---------- Buttons & fields ---------- */
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn:hover { background: var(--soft); }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn.red { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--accent); }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: .5; cursor: default; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+input[type="text"], input[type="number"], input[type="date"], select, textarea { background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; min-width: 0; }
+label.f { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.formgrid .full { grid-column: 1 / -1; }
 
 /* ---------- Hero ---------- */
-.hero { grid-area: hero; background: var(--hero); color: var(--hero-ink); border-radius: 24px; padding: 22px 20px 20px; position: relative; overflow: hidden; }
+.hero { background: var(--hero); color: var(--hero-ink); border-radius: 24px; padding: 20px 18px 18px; position: relative; overflow: hidden; }
 .hero::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(208,24,47,.35), transparent 70%); pointer-events: none; }
 .hero > * { position: relative; z-index: 1; }
+.herotop { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 .eyebrow { font-size: 13px; color: var(--hero-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .eyebrow .tag { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.1); color: var(--hero-ink); }
 .eyebrow .tag.bad { background: var(--accent); color: #fff; }
-.left { font-family: var(--font-display); font-size: clamp(56px, 15vw, 84px); line-height: .95; letter-spacing: -0.02em; margin: 6px 0 4px; overflow-wrap: anywhere; }
+.left { font-family: var(--font-display); font-size: clamp(54px, 15vw, 80px); line-height: .95; letter-spacing: -0.02em; margin: 6px 0 4px; overflow-wrap: anywhere; }
 .left .cur { font-size: .42em; font-style: italic; color: var(--hero-muted); margin-left: 6px; letter-spacing: 0; }
 .left.neg { color: #FF7A86; }
 .sub { font-size: 14px; color: var(--hero-muted); }
 .sub b { color: var(--hero-ink); font-weight: 600; }
-
-.strip { display: flex; gap: 2px; height: 22px; margin: 20px 0 8px; border-radius: 7px; overflow: hidden; position: relative; }
+.payring { flex: none; display: grid; justify-items: center; gap: 2px; background: none; border: 0; color: var(--hero-ink); cursor: pointer; padding: 0; }
+.payring svg { width: 62px; height: 62px; display: block; }
+.payring .pl { font-size: 10.5px; color: var(--hero-muted); text-align: center; line-height: 1.2; max-width: 74px; }
+.strip { display: flex; gap: 2px; height: 20px; margin: 18px 0 8px; border-radius: 7px; overflow: hidden; position: relative; }
 .strip .seg { height: 100%; min-width: 3px; transition: flex-grow .7s cubic-bezier(.2,.8,.2,1); flex-basis: 0; }
 .strip .rest { background: repeating-linear-gradient(135deg, rgba(255,255,255,.16) 0 6px, rgba(255,255,255,.06) 6px 12px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.22); border-radius: 0 7px 7px 0; }
 .strip .over { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #fff; }
 .striplegend { display: flex; justify-content: space-between; font-size: 12px; color: var(--hero-muted); gap: 8px; }
-
-.allow { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hero-line); display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.allow { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hero-line); display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
 .allow .k { font-size: 12px; color: var(--hero-muted); }
-.allow .v { font-size: 17px; font-weight: 600; overflow-wrap: anywhere; }
+.allow .v { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
 .allow .v small { font-weight: 400; color: var(--hero-muted); font-size: 12px; }
-
-.salaryrow { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--hero-muted); }
-.hbtn { border: 1px solid var(--hero-line); background: rgba(255,255,255,.06); color: var(--hero-ink); border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
-.hbtn:hover { background: rgba(255,255,255,.12); }
 .salaryform { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
 .salaryform input { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.25); color: var(--hero-ink); border-radius: 12px; padding: 11px 14px; width: 190px; font-size: 18px; }
 .salaryform input::placeholder { color: var(--hero-muted); }
@@ -113,92 +127,96 @@ header.top { display: flex; align-items: center; justify-content: space-between;
 .setup h3 { font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 1.1; margin: 6px 0 4px; text-wrap: balance; }
 .setup p { margin: 0; color: var(--hero-muted); font-size: 14px; max-width: 42ch; }
 
-/* ---------- Forms & buttons ---------- */
-.btn { border: 1px solid var(--line); background: var(--surface); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 14px; }
-.btn:hover { background: var(--soft); }
-.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-.btn.primary:hover { filter: brightness(1.15); }
-.btn:disabled { opacity: .55; cursor: default; }
-input[type="text"], input[type="number"], input[type="date"], select, textarea { background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; min-width: 0; }
-label.f { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+/* ---------- Quick chips ---------- */
+.qchips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 4px; scroll-snap-type: x proximity; }
+.qchips::-webkit-scrollbar { display: none; }
+.qchip { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 8px 12px 8px 8px; cursor: pointer; text-align: left; }
+.qchip:active { transform: scale(.97); }
+.qchip .ico { width: 30px; height: 30px; border-radius: 9px; }
+.qchip .ico svg.i { width: 17px; height: 17px; }
+.qchip b { display: block; font-size: 13.5px; font-weight: 600; line-height: 1.2; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qchip span.a { font-size: 12px; color: var(--muted); }
+.sectitle { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 4px 2px -4px; }
+.sectitle small { text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 13px; }
 
-/* ---------- Add ---------- */
-#add { grid-area: add; }
-.composer { border: 1px solid var(--line); background: var(--soft); border-radius: 16px; padding: 4px; transition: border-color .2s; }
-.composer:focus-within { border-color: var(--ink); }
-.composer textarea { border: 0; background: transparent; resize: none; min-height: 84px; padding: 12px; }
-.composer textarea:focus-visible { outline: none; }
-.composer .bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; flex-wrap: wrap; }
-.composer .hint { font-size: 12px; color: var(--muted); }
-.spark { display: inline-flex; align-items: center; gap: 6px; }
-.spark::before { content: "✦"; color: var(--accent); }
-.preview { display: grid; gap: 8px; margin-top: 12px; }
-.prow { display: grid; grid-template-columns: 120px 1fr; gap: 6px; padding: 10px; border: 1px dashed var(--line); border-radius: 12px; }
-.prow .warnline { grid-column: 1 / -1; font-size: 12px; color: var(--accent); }
-.prow.sal { border-style: solid; border-color: var(--good); grid-template-columns: 1fr auto; align-items: center; font-size: 14px; }
-.pactions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-details.manual { margin-top: 14px; }
-details.manual summary { cursor: pointer; font-size: 14px; color: var(--muted); list-style: none; }
-details.manual summary::-webkit-details-marker { display: none; }
-details.manual summary::before { content: "+ "; }
-details.manual[open] summary::before { content: "− "; }
-.mform { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-.mform .full { grid-column: 1 / -1; }
-.mform .actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+/* ---------- Icons ---------- */
+.ico { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; color: #fff; flex: none; }
+.ico svg.i { width: 19px; height: 19px; stroke-width: 2; }
 
-/* ---------- Categories ---------- */
-#cats { grid-area: cats; }
-.catlist { display: grid; gap: 2px; }
-.cat { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--soft); font-size: 14px; }
-.cat:last-child { border-bottom: 0; }
-.dot { width: 10px; height: 10px; border-radius: 3px; }
-.cat .amt { text-align: right; font-weight: 600; }
-.cat .pc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
-.empty { color: var(--muted); font-size: 14px; margin: 0; }
-
-
-/* ---------- List ---------- */
-#list { grid-area: list; }
+/* ---------- List rows with swipe ---------- */
 .day { margin-top: 14px; }
 .day:first-child { margin-top: 0; }
 .dayhead { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding-bottom: 6px; }
 .dayhead span:first-child { font-weight: 600; color: var(--ink); }
-.tx { display: grid; grid-template-columns: 34px 1fr auto 28px; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--soft); }
-.ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; }
-.tx .who { min-width: 0; cursor: pointer; }
+.swipe { position: relative; overflow: hidden; border-top: 1px solid var(--soft); }
+.swipe .bg { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 18px; font-size: 13px; font-weight: 600; color: #fff; }
+.swipe .bg .e { display: inline-flex; gap: 6px; align-items: center; }
+.swipe.toedit .bg { background: #4A6CF0; }
+.swipe.todel .bg { background: var(--accent); }
+.swipe .bg .e.r { margin-left: auto; }
+.tx { position: relative; display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; padding: 10px 2px; background: var(--surface); touch-action: pan-y; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.tx.anim { transition: transform .22s ease; }
+.tx .who { min-width: 0; }
 .tx .who .t { font-weight: 500; overflow-wrap: anywhere; }
 .tx .who .c { font-size: 12px; color: var(--muted); }
 .tx .a { text-align: right; }
 .tx .a .m { font-weight: 600; white-space: nowrap; }
 .tx .a .bal { display: block; font-size: 11.5px; color: var(--muted); white-space: nowrap; }
 .tx .a .bal.neg { color: var(--accent); }
-.tx .del { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 4px; border-radius: 8px; font-size: 13px; width: 28px; height: 28px; }
-.tx .del:hover { color: var(--accent); background: var(--soft); }
-.tx .del.armed { color: var(--accent-ink); background: var(--accent); width: auto; }
-.listfoot { display: flex; justify-content: flex-end; margin-top: 14px; }
-.csvbox { width: 100%; font-size: 12px; margin-top: 8px; min-height: 120px; }
+.basetag { font-size: 11px; font-weight: 600; color: var(--good); }
+.swipe.gone { transition: height .22s ease, opacity .22s ease; opacity: 0; }
+.hint { font-size: 12px; color: var(--muted); margin: 10px 0 0; text-align: center; }
 
-.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 11px 16px; border-radius: 12px; font-size: 14px; max-width: calc(100% - 32px); z-index: 10; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+/* ---------- Month view ---------- */
+.monthbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.monthnav { display: flex; align-items: center; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.monthnav button { border: 0; background: transparent; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; color: var(--muted); }
+.monthnav .label { min-width: 120px; text-align: center; font-weight: 600; font-size: 14px; }
+.msum { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.msum > div { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; min-width: 0; }
+.msum .k { font-size: 12px; color: var(--muted); }
+.msum .v { font-weight: 600; font-size: 15.5px; overflow-wrap: anywhere; }
+.msum .v.good { color: var(--good); } .msum .v.bad { color: var(--accent); }
 
-@media (max-width: 420px) {
-  .allow { grid-template-columns: 1fr 1fr; }
-  .allow > :first-child { grid-column: 1 / -1; }
-  .mform, .prow { grid-template-columns: 1fr; }
-}
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 5px; }
+.cal .wd { font-size: 11px; color: var(--muted); text-align: center; font-weight: 600; padding-bottom: 2px; }
+.cal .d { aspect-ratio: 1 / 1.08; border-radius: 10px; border: 0; background: var(--soft); cursor: pointer; display: grid; align-content: space-between; padding: 5px 4px 4px; text-align: left; position: relative; min-width: 0; color: var(--ink); }
+.cal .d .n { font-size: 12px; font-weight: 600; line-height: 1; }
+.cal .d .s { font-size: 9.5px; line-height: 1; text-align: right; opacity: .85; white-space: nowrap; overflow: hidden; }
+.cal .d.hot { color: #fff; }
+.cal .d.today { box-shadow: inset 0 0 0 2px var(--ink); }
+.cal .d.sel { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cal .d.future { opacity: .45; }
+.cal .d .fx { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--good); }
+.cal .blank { visibility: hidden; }
+.callegend { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+.callegend .sw { display: inline-flex; gap: 2px; }
+.callegend .sw i { width: 14px; height: 10px; border-radius: 3px; display: block; }
+.callegend .fxd { width: 6px; height: 6px; border-radius: 50%; background: var(--good); display: inline-block; margin-left: 8px; }
+.filterchip { display: inline-flex; align-items: center; gap: 6px; background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12.5px; cursor: pointer; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 500; }
+
+.catlist { display: grid; }
+.cat { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--soft); font-size: 14px; }
+.cat:last-child { border-bottom: 0; }
+.dot { width: 10px; height: 10px; border-radius: 3px; }
+.cat .amt { text-align: right; font-weight: 600; }
+.cat .pc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
 
 /* ---------- Savings ---------- */
-#save { grid-area: save; }
-#backup { grid-area: backup; }
-#fixedCard { grid-area: fixed; }
-#fixedCard .empty { margin-bottom: 8px; }
-#applyFixedBtn { margin-top: 12px; width: 100%; }
-.famt { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; white-space: nowrap; }
-.fdel { border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 8px; font-size: 13px; min-width: 28px; height: 28px; }
-.fdel:hover { color: var(--accent); background: var(--soft); }
-.fdel.armed { color: var(--accent-ink); background: var(--accent); padding: 0 8px; }
-.cat .pc { display: block; }
-.basetag { font-size: 11px; font-weight: 600; color: var(--good); }
+.goal { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--soft); }
+.goal:last-of-type { border-bottom: 0; }
+.jar { width: 74px; height: 92px; display: block; }
+.goal .gn { font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; gap: 8px; }
+.goal .gn button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 4px; }
+.goal .gv { font-size: 13.5px; color: var(--muted); }
+.goal .gv b { color: var(--ink); }
+.goal .gest { font-size: 12.5px; color: var(--good); margin-top: 2px; }
+.goal .gest.done { font-weight: 600; }
+.goal .gform { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.goal .gform input { width: 120px; flex: 1; }
+.goal .gbtns { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.goal .gbtns .btn { padding: 7px 12px; font-size: 13px; }
+.suggest { background: color-mix(in srgb, var(--good) 10%, var(--surface)); border: 1px solid color-mix(in srgb, var(--good) 35%, var(--line)); border-radius: 16px; padding: 12px 14px; font-size: 14px; display: grid; gap: 8px; }
 .sbars { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 8px; align-items: end; margin-bottom: 10px; }
 .sb { display: grid; gap: 4px; justify-items: center; text-align: center; }
 .sb .sv { font-size: 11.5px; font-weight: 600; color: var(--good); white-space: nowrap; }
@@ -210,27 +228,103 @@ details.manual[open] summary::before { content: "− "; }
 .sb .col i.neg.part { background: repeating-linear-gradient(135deg, var(--accent) 0 5px, color-mix(in srgb, var(--accent) 45%, transparent) 5px 10px); }
 .sb .sm { font-size: 12px; color: var(--muted); }
 .sb.on .sm { color: var(--ink); font-weight: 600; }
-#backup .pactions label.btn { display: inline-flex; align-items: center; }
 
-.wrap { padding-top: max(18px, env(safe-area-inset-top)); padding-bottom: max(56px, env(safe-area-inset-bottom)); }
+/* ---------- Settings ---------- */
+.setrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--soft); }
+.setrow:last-child { border-bottom: 0; }
+.setrow .k { font-weight: 500; }
+.setrow .k small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; }
+.setrow select, .setrow input { width: auto; min-width: 110px; }
+.famt { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; white-space: nowrap; }
+.fdel { border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 8px; font-size: 13px; min-width: 28px; height: 28px; }
+.fdel.armed { color: #fff; background: var(--accent); padding: 0 8px; }
+details.more { margin-top: 12px; }
+details.more summary { cursor: pointer; font-size: 14px; color: var(--muted); list-style: none; }
+details.more summary::-webkit-details-marker { display: none; }
+details.more summary::before { content: "+ "; }
+details.more[open] summary::before { content: "− "; }
+details.more form { margin-top: 10px; }
+
+/* ---------- Bottom nav + FAB ---------- */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding-bottom: var(--safe-b); }
+.tabbar .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); height: var(--nav-h); }
+.tab { border: 0; background: none; display: grid; justify-items: center; align-content: center; gap: 3px; color: var(--muted); font-size: 11px; font-weight: 500; cursor: pointer; text-decoration: none; }
+.tab svg.i { width: 23px; height: 23px; }
+.tab.on { color: var(--ink); font-weight: 600; }
+.tab.on svg.i { color: var(--accent); }
+.fab { position: fixed; z-index: 21; right: max(18px, calc(50% - 280px + 18px)); bottom: calc(var(--nav-h) + var(--safe-b) + 16px); width: 62px; height: 62px; border-radius: 20px; border: 0; background: var(--accent); color: #fff; display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 28px rgba(208,24,47,.4), 0 2px 6px rgba(0,0,0,.2); transition: transform .15s; }
+.fab:active { transform: scale(.94); }
+.fab svg.i { width: 30px; height: 30px; stroke-width: 2.4; }
+
+/* ---------- Sheet ---------- */
+.backdrop { position: fixed; inset: 0; z-index: 30; background: rgba(5,12,20,.5); opacity: 0; transition: opacity .2s; }
+.backdrop.show { opacity: 1; }
+.sheet { position: fixed; z-index: 31; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto; background: var(--surface); border-radius: 24px 24px 0 0; padding: 8px 16px calc(16px + var(--safe-b)); max-height: 92vh; overflow-y: auto; transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1); box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
+.sheet.show { transform: none; }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 2px auto 10px; }
+.sheethead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.sheethead h3 { margin: 0; font-size: 16px; }
+.seg2 { display: inline-flex; background: var(--soft); border-radius: 10px; padding: 3px; }
+.seg2 button { border: 0; background: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); }
+.seg2 button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.amtview { font-family: var(--font-display); font-size: 58px; line-height: 1; text-align: center; margin: 8px 0 12px; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.amtview .cur { font-size: .45em; font-style: italic; color: var(--muted); margin-left: 6px; }
+.amtview.zero { color: var(--muted); }
+.catpick { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 6px; margin-bottom: 10px; }
+.catpick button { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 7px 2px 6px; display: grid; justify-items: center; gap: 3px; font-size: 10.5px; cursor: pointer; color: var(--muted); min-width: 0; }
+.catpick button .ico { width: 30px; height: 30px; border-radius: 9px; }
+.catpick button .ico svg.i { width: 16px; height: 16px; }
+.catpick button span.l { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.catpick button.on { border-color: var(--ink); color: var(--ink); font-weight: 600; box-shadow: inset 0 0 0 1px var(--ink); }
+.sheetrow { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.sheetrow input[type="text"] { flex: 1; }
+.datechips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+.datechips button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.datechips button.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.datechips input { width: auto; padding: 6px 10px; border-radius: 999px; font-size: 14px; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+.keypad button { border: 0; background: var(--soft); border-radius: 14px; height: 52px; font-size: 22px; font-weight: 500; cursor: pointer; }
+.keypad button:active { background: var(--line); }
+.sheet .save { height: 54px; font-size: 16px; font-weight: 600; border-radius: 16px; }
+.sheet .actions2 { display: flex; gap: 8px; }
+.sheet .actions2 #sSave { flex: 1; }
+.sheet .actions2 #sDelete { flex: none; padding: 0 20px; }
+.preview { display: grid; gap: 8px; margin-top: 12px; }
+.prow { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px; border: 1px dashed var(--line); border-radius: 12px; }
+.prow .warnline { grid-column: 1 / -1; font-size: 12px; color: var(--accent); }
+.prow.sal { border-style: solid; border-color: var(--good); grid-template-columns: 1fr auto; align-items: center; font-size: 14px; }
+textarea.tt { min-height: 110px; resize: none; }
+
+/* ---------- Report ---------- */
+.report img { width: 100%; border-radius: 16px; display: block; box-shadow: 0 8px 30px rgba(0,0,0,.25); background: var(--hero); aspect-ratio: 4 / 5; }
+.report .row { margin-top: 12px; }
+.report .row .btn { flex: 1; }
+
+/* ---------- Toast ---------- */
+.toast { position: fixed; left: 50%; bottom: calc(var(--nav-h) + var(--safe-b) + 92px); transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 10px 10px 10px 16px; border-radius: 14px; font-size: 14px; width: max-content; max-width: calc(100% - 32px); z-index: 40; box-shadow: 0 8px 30px rgba(0,0,0,.25); display: flex; align-items: center; gap: 12px; }
+.toast button { border: 0; background: rgba(255,255,255,.14); color: inherit; font-weight: 600; padding: 6px 10px; border-radius: 9px; cursor: pointer; }
+:root[data-theme="dark"] .toast button, .toast button { background: color-mix(in srgb, var(--surface) 18%, transparent); }
+
+@media (max-width: 380px) {
+  .allow { grid-template-columns: 1fr 1fr; }
+  .allow > :first-child { grid-column: 1 / -1; }
+  .catpick { grid-template-columns: repeat(5, minmax(0,1fr)); }
+  .catpick button span.l { font-size: 9.5px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
   <header class="top">
     <div class="brandwrap"><img src="logo.png" alt="" width="38" height="38"><h1 class="brand">ALL <span class="brandsub">Expenses <em>&amp;</em> Saving</span></h1></div>
-    <nav class="monthnav" aria-label="Zgjidh muajin">
-      <button type="button" id="prevM" aria-label="Muaji i kaluar">‹</button>
-      <div class="label" id="monthLabel">—</div>
-      <button type="button" id="nextM" aria-label="Muaji tjetër">›</button>
-    </nav>
+    <span class="viewtitle" id="viewTitle"></span>
   </header>
-
   <div class="note" id="note" hidden></div>
 
-  <main class="grid">
-    <!-- HERO -->
-    <section class="hero" id="hero" aria-label="Gjendja e rrogës">
+  <!-- ================= SOT ================= -->
+  <section class="view" id="v-sot" data-title="Sot">
+    <div class="hero" id="hero">
       <div id="setup" class="setup" hidden>
         <div class="eyebrow" id="setupEyebrow">Fillimi i muajit</div>
         <h3 id="setupTitle">Sa është rroga jote këtë muaj?</h3>
@@ -240,10 +334,14 @@ details.manual[open] summary::before { content: "− "; }
           <button class="go" type="submit">Ruaj rrogën</button>
         </form>
       </div>
-
       <div id="state">
-        <div class="eyebrow"><span>Të mbetura nga rroga</span><span class="tag" id="tag"></span></div>
-        <div class="left" id="left">0<span class="cur">lekë</span></div>
+        <div class="herotop">
+          <div>
+            <div class="eyebrow"><span>Të mbetura nga rroga</span><span class="tag" id="tag" hidden></span></div>
+            <div class="left" id="left">0<span class="cur">lekë</span></div>
+          </div>
+          <button class="payring" type="button" id="payring" aria-label="Ditët deri te rroga"></button>
+        </div>
         <div class="sub" id="sub"></div>
         <div class="strip" id="strip" role="img" aria-label="Rroga e ndarë sipas shpenzimeve"></div>
         <div class="striplegend"><span id="usedPct"></span><span id="salaryLbl"></span></div>
@@ -252,153 +350,259 @@ details.manual[open] summary::before { content: "− "; }
           <div><div class="k">Shpenzuar</div><div class="v" id="spent">0</div></div>
           <div><div class="k">Ndaj muajit të kaluar</div><div class="v" id="vsPrev">—</div></div>
         </div>
-        <div class="salaryrow">
-          <span id="salaryNote"></span>
-          <button class="hbtn" type="button" id="editSalary">Ndrysho rrogën</button>
-        </div>
-        <form class="salaryform" id="salaryForm" hidden>
-          <input type="number" id="salaryInput" min="0" step="100" inputmode="numeric" aria-label="Rroga në lekë">
-          <button class="go" type="submit">Ruaj</button>
-          <button class="hbtn" type="button" id="cancelSalary">Anulo</button>
-        </form>
       </div>
-    </section>
+    </div>
 
-    <!-- ADD -->
-    <section class="card" id="add" aria-label="Shto shpenzim">
-      <h2>Shto shpenzim</h2>
-      <div id="quickBox">
-        <div class="composer">
-          <textarea id="quickText" aria-label="Shkruaj shpenzimet" placeholder="Shkruaje si të vjen: “dje market 4500, karburant 3000, sot kafe 150”"></textarea>
-          <div class="bar">
-            <span class="hint spark">Ndahet vetë në rreshta</span>
-            <button class="btn primary" type="button" id="parseBtn">Shto</button>
-          </div>
-        </div>
-        <div class="preview" id="preview" hidden></div>
-        <div class="pactions" id="previewActions" hidden>
-          <button class="btn primary" type="button" id="saveAll">Ruaj</button>
-          <button class="btn" type="button" id="cancelPreview">Anulo</button>
-        </div>
-      </div>
-      <details class="manual" id="manual">
-        <summary id="manualSummary">Shto manualisht</summary>
-        <form class="mform" id="mform">
-          <label class="f" for="mAmount">Shuma (lekë)
-            <input type="number" id="mAmount" min="0" step="any" inputmode="decimal" required>
-          </label>
-          <label class="f" for="mDate">Data
-            <input type="date" id="mDate" required>
-          </label>
-          <label class="f full" for="mCat">Kategoria
-            <select id="mCat"></select>
-          </label>
-          <label class="f full" for="mNote">Përshkrimi
-            <input type="text" id="mNote" maxlength="120" placeholder="p.sh. Market Big">
-          </label>
-          <div class="actions">
-            <button class="btn primary" type="submit" id="mSubmit">Shto</button>
-            <button class="btn" type="button" id="mCancel" hidden>Anulo ndryshimin</button>
-          </div>
-        </form>
-      </details>
-    </section>
+    <div id="quickWrap">
+      <div class="sectitle"><span>Shto shpejt</span><small>një prekje</small></div>
+      <div class="qchips" id="qchips" style="margin-top:12px"></div>
+    </div>
 
-    <!-- LIST -->
-    <section class="card" id="list" aria-label="Lëvizjet e muajit">
-      <h2>Lëvizjet <small id="count"></small></h2>
-      <div id="txlist"></div>
-      <div class="listfoot"><button class="btn" type="button" id="csvBtn">Kopjo si CSV</button></div>
-      <textarea class="csvbox" id="csvBox" readonly hidden aria-label="Të dhënat në CSV"></textarea>
-    </section>
+    <div class="card">
+      <h2>Sot <small id="todayTotal"></small></h2>
+      <div id="todayList"></div>
+    </div>
+  </section>
 
-    <!-- CATS -->
-    <section class="card" id="cats" aria-label="Ku shkon rroga">
+  <!-- ================= MUAJI ================= -->
+  <section class="view" id="v-muaji" data-title="Muaji" hidden>
+    <div class="monthbar">
+      <nav class="monthnav" aria-label="Zgjidh muajin">
+        <button type="button" id="prevM" aria-label="Muaji i kaluar">‹</button>
+        <div class="label" id="monthLabel">—</div>
+        <button type="button" id="nextM" aria-label="Muaji tjetër">›</button>
+      </nav>
+      <button class="btn red" type="button" id="reportBtn">Raporti</button>
+    </div>
+    <div class="msum">
+      <div><div class="k">Rroga</div><div class="v" id="mSalary">—</div></div>
+      <div><div class="k">Shpenzuar</div><div class="v" id="mSpent">0</div></div>
+      <div><div class="k" id="mLeftK">Mbeten</div><div class="v" id="mLeft">—</div></div>
+    </div>
+    <button class="btn block" type="button" id="applyFixedBtn" hidden></button>
+
+    <div class="card">
+      <h2>Kalendari <small id="calInfo">prek një ditë</small></h2>
+      <div class="cal" id="cal"></div>
+      <div class="callegend"><span>Më pak</span><span class="sw" id="calSw"></span><span>Më shumë</span><span class="fxd"></span><span>shpenzime bazë</span></div>
+    </div>
+
+    <div class="card">
       <h2>Ku shkon rroga</h2>
       <div class="catlist" id="catlist"></div>
-    </section>
+    </div>
 
-    <!-- FIXED -->
-    <section class="card" id="fixedCard" aria-label="Shpenzime bazë">
+    <div class="card">
+      <h2><span>Lëvizjet</span> <span id="listFilter"></span></h2>
+      <div id="txlist"></div>
+      <p class="hint" id="swipeHint">Prek për ta ndryshuar · rrëshqit majtas për ta fshirë</p>
+      <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" type="button" id="csvBtn">Kopjo si CSV</button></div>
+    </div>
+  </section>
+
+  <!-- ================= KURSIMET ================= -->
+  <section class="view" id="v-kursimet" data-title="Kursimet" hidden>
+    <div id="suggest"></div>
+    <div class="card">
+      <h2>Synimet <small id="goalsTotal"></small></h2>
+      <div id="goals"></div>
+      <details class="more" id="newGoal">
+        <summary>Synim i ri</summary>
+        <form class="formgrid" id="goalForm">
+          <label class="f full" for="gName">Për çfarë po kursen?
+            <input type="text" id="gName" maxlength="40" placeholder="p.sh. Pushime në verë" required>
+          </label>
+          <label class="f" for="gTarget">Shuma që duhet (L)
+            <input type="number" id="gTarget" min="1" step="any" inputmode="numeric" required>
+          </label>
+          <label class="f" for="gStart">Ke tashmë (L)
+            <input type="number" id="gStart" min="0" step="any" inputmode="numeric" placeholder="0">
+          </label>
+          <div class="full"><button class="btn primary" type="submit">Krijo synimin</button></div>
+        </form>
+      </details>
+    </div>
+    <div class="card">
+      <h2>Kursimi çdo muaj <small id="saveTotal"></small></h2>
+      <div class="sbars" id="sbars"></div>
+      <p class="empty" id="saveHint"></p>
+    </div>
+  </section>
+
+  <!-- ================= CILËSIMET ================= -->
+  <section class="view" id="v-cilesimet" data-title="Cilësimet" hidden>
+    <div class="card">
+      <h2>Rroga</h2>
+      <div class="setrow">
+        <div class="k">Rroga e <span id="setMonth"></span><small id="setSalaryNote"></small></div>
+        <form class="row" id="salaryForm" style="flex-wrap:nowrap">
+          <input type="number" id="salaryInput" min="0" step="100" inputmode="numeric" aria-label="Rroga në lekë" style="width:130px">
+          <button class="btn primary" type="submit">Ruaj</button>
+        </form>
+      </div>
+      <div class="setrow">
+        <div class="k">Dita e rrogës<small>Për numërimin deri te rroga</small></div>
+        <select id="paydaySel" aria-label="Dita e rrogës"></select>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Shpenzime bazë <small id="fixedTotal"></small></h2>
-      <p class="empty" id="fixedStatus">Futen vetë më 1 të çdo muaji.</p>
+      <p class="empty" id="fixedStatus" style="margin-bottom:6px">Futen vetë më 1 të çdo muaji.</p>
       <div class="catlist" id="fixedList"></div>
-      <button class="btn primary" type="button" id="applyFixedBtn" hidden></button>
-      <details class="manual">
+      <details class="more">
         <summary>Shto shpenzim bazë</summary>
-        <form class="mform" id="fform">
+        <form class="formgrid" id="fform">
           <label class="f full" for="fNote">Emri
             <input type="text" id="fNote" maxlength="80" placeholder="p.sh. Qeraja" required>
           </label>
-          <label class="f" for="fAmount">Shuma (lekë)
+          <label class="f" for="fAmount">Shuma (L)
             <input type="number" id="fAmount" min="0" step="any" inputmode="decimal" required>
           </label>
           <label class="f" for="fCat">Kategoria
             <select id="fCat"></select>
           </label>
-          <div class="actions"><button class="btn primary" type="submit">Shto te bazat</button></div>
+          <div class="full"><button class="btn primary" type="submit">Shto te bazat</button></div>
         </form>
       </details>
-    </section>
+    </div>
 
-    <!-- SAVINGS -->
-    <section class="card" id="save" aria-label="Kursimet">
-      <h2>Kursimet <small id="saveTotal"></small></h2>
-      <div class="sbars" id="sbars"></div>
-      <p class="empty" id="saveHint"></p>
-    </section>
-
-    <!-- BACKUP -->
-    <section class="card" id="backup" aria-label="Backup">
+    <div class="card">
       <h2>Të dhënat <small id="dataInfo"></small></h2>
       <p class="empty">Ruhen vetëm në këtë telefon. Bëj një backup herë pas here, sidomos para se të pastrosh Chrome-in ose të ndërrosh telefon.</p>
-      <div class="pactions">
+      <div class="row" style="margin-top:12px">
         <button class="btn primary" type="button" id="exportBtn">Shkarko backup</button>
         <label class="btn" for="importFile">Ngarko backup</label>
         <input type="file" id="importFile" accept="application/json,.json" hidden>
       </div>
-    </section>
-  </main>
+    </div>
+    <p class="hint">ALL · Expenses &amp; Saving · v3</p>
+  </section>
 </div>
-<div class="toast" id="toast" role="status" hidden></div>
+
+<!-- FAB -->
+<button class="fab" type="button" id="fab" aria-label="Shto shpenzim"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+
+<!-- Bottom nav -->
+<nav class="tabbar" aria-label="Menuja">
+  <div class="in">
+    <a class="tab" href="#sot" data-tab="sot"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>Sot</a>
+    <a class="tab" href="#muaji" data-tab="muaji"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Muaji</a>
+    <a class="tab" href="#kursimet" data-tab="kursimet"><svg class="i" viewBox="0 0 24 24"><path d="M8 3.5h8M9 3.5v2.3C6.4 6.8 5 9 5 11.8V18a2.5 2.5 0 0 0 2.5 2.5h9A2.5 2.5 0 0 0 19 18v-6.2C19 9 17.6 6.8 15 5.8V3.5"/><path d="M5 13.5h14"/></svg>Kursimet</a>
+    <a class="tab" href="#cilesimet" data-tab="cilesimet"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Cilësimet</a>
+  </div>
+</nav>
+
+<!-- Sheet: shto / ndrysho -->
+<div class="backdrop" id="backdrop" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="grab"></div>
+  <div class="sheethead">
+    <h3 id="sheetTitle">Shpenzim i ri</h3>
+    <div class="seg2" id="modeSeg"><button type="button" data-mode="pad" class="on">Shuma</button><button type="button" data-mode="text">Me tekst</button></div>
+  </div>
+
+  <div id="padMode">
+    <div class="amtview zero" id="amtView">0<span class="cur">L</span></div>
+    <div class="catpick" id="catpick"></div>
+    <div class="sheetrow"><input type="text" id="sNote" maxlength="120" placeholder="Përshkrimi (opsional)" aria-label="Përshkrimi"></div>
+    <div class="datechips" id="datechips">
+      <button type="button" data-d="0">Sot</button>
+      <button type="button" data-d="1">Dje</button>
+      <input type="date" id="sDate" aria-label="Data">
+    </div>
+    <div class="keypad" id="keypad">
+      <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+      <button type="button">4</button><button type="button">5</button><button type="button">6</button>
+      <button type="button">7</button><button type="button">8</button><button type="button">9</button>
+      <button type="button">000</button><button type="button">0</button><button type="button" aria-label="Fshi shifrën">⌫</button>
+    </div>
+    <div class="actions2" id="padActions">
+      <button class="btn red save" type="button" id="sDelete" hidden>Fshi</button>
+      <button class="btn primary save" type="button" id="sSave" disabled>Shto</button>
+    </div>
+  </div>
+
+  <div id="textMode" hidden>
+    <textarea class="tt" id="quickText" aria-label="Shkruaj shpenzimet" placeholder="Shkruaje si të vjen: “dje market 4500, karburant 3000, sot kafe 150”"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn primary" type="button" id="parseBtn">Lexo</button><span class="muted" style="font-size:13px">Kupton “mijë”, “dje”, “lekë të vjetra”.</span></div>
+    <div class="preview" id="preview" hidden></div>
+    <div class="row" id="previewActions" hidden style="margin-top:10px">
+      <button class="btn primary save" type="button" id="saveAll" style="flex:1">Ruaj</button>
+      <button class="btn" type="button" id="cancelPreview">Anulo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sheet: raporti -->
+<div class="sheet report" id="reportSheet" role="dialog" aria-modal="true" aria-labelledby="reportTitle" hidden>
+  <div class="grab"></div>
+  <div class="sheethead"><h3 id="reportTitle">Raporti i muajit</h3><button class="btn ghost" type="button" id="reportClose">Mbyll</button></div>
+  <img id="reportImg" alt="Raporti i muajit si foto">
+  <div class="row">
+    <button class="btn primary" type="button" id="reportShare">Shpërndaj</button>
+    <button class="btn" type="button" id="reportSave">Ruaj foton</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button type="button" id="toastBtn" hidden></button></div>
 
 <script>
 (function () {
   "use strict";
 
+  // ================= Konstante =================
+  var ICONS = {
+    ushqim: '<path d="M3 4h2l2.3 11a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L20.5 8H6.1"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/>',
+    shtepi: '<path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10M10 19.5v-5h4v5"/>',
+    fatura: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>',
+    transport: '<path d="M4 16.5V13l2-5.5h12l2 5.5v3.5zM4 13h16"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/>',
+    jashte: '<path d="M5 9h11v4.5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5v2.5M12 3.5v2.5"/>',
+    shendet: '<path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z"/>',
+    veshje: '<path d="M8.5 4 4 6.5 5.5 11l2-1v10h9V10l2 1L20 6.5 15.5 4c-.6 1.6-1.9 2.6-3.5 2.6S9.1 5.6 8.5 4z"/>',
+    argetim: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>',
+    familja: '<path d="M12 20s-7-4.3-8.7-8.6A4.8 4.8 0 0 1 12 7a4.8 4.8 0 0 1 8.7 4.4C19 15.7 12 20 12 20z"/>',
+    tjeter: '<circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/>'
+  };
   var CATS = [
-    { id: "ushqim",    name: "Ushqim & market",                color: "#E8A33D", ab: "U" },
-    { id: "shtepi",    name: "Qira & shtëpia",                 color: "#6C8EF5", ab: "Q" },
-    { id: "fatura",    name: "Fatura (drita, uji, interneti)", color: "#9B7BEA", ab: "F" },
-    { id: "transport", name: "Transport & karburant",          color: "#2FA898", ab: "T" },
-    { id: "jashte",    name: "Kafe & restorante",              color: "#E8675A", ab: "K" },
-    { id: "shendet",   name: "Shëndet & farmaci",              color: "#4FAE6A", ab: "SH" },
-    { id: "veshje",    name: "Veshje & kujdes personal",       color: "#DE76AA", ab: "V" },
-    { id: "argetim",   name: "Argëtim & pushime",              color: "#D9B23C", ab: "A" },
-    { id: "familja",   name: "Familja & fëmijët",              color: "#4597CF", ab: "FM" },
-    { id: "tjeter",    name: "Të tjera",                       color: "#8C98A5", ab: "•" }
+    { id: "ushqim",    name: "Ushqim & market",                short: "Ushqim",    color: "#E8A33D" },
+    { id: "shtepi",    name: "Qira & shtëpia",                 short: "Shtëpi",    color: "#6C8EF5" },
+    { id: "fatura",    name: "Fatura (drita, uji, interneti)", short: "Fatura",    color: "#9B7BEA" },
+    { id: "transport", name: "Transport & karburant",          short: "Transport", color: "#2FA898" },
+    { id: "jashte",    name: "Kafe & restorante",              short: "Kafe",      color: "#E8675A" },
+    { id: "shendet",   name: "Shëndet & farmaci",              short: "Shëndet",   color: "#4FAE6A" },
+    { id: "veshje",    name: "Veshje & kujdes personal",       short: "Veshje",    color: "#DE76AA" },
+    { id: "argetim",   name: "Argëtim & pushime",              short: "Argëtim",   color: "#D9B23C" },
+    { id: "familja",   name: "Familja & fëmijët",              short: "Familja",   color: "#4597CF" },
+    { id: "tjeter",    name: "Të tjera",                       short: "Të tjera",  color: "#8C98A5" }
   ];
   var CAT = {}; CATS.forEach(function (c) { CAT[c.id] = c; });
   var MONTHS = ["Janar","Shkurt","Mars","Prill","Maj","Qershor","Korrik","Gusht","Shtator","Tetor","Nëntor","Dhjetor"];
   var MONTHS_GEN = ["Janarit","Shkurtit","Marsit","Prillit","Majit","Qershorit","Korrikut","Gushtit","Shtatorit","Tetorit","Nëntorit","Dhjetorit"];
+  var MONTHS_DEF = ["Janari","Shkurti","Marsi","Prilli","Maji","Qershori","Korriku","Gushti","Shtatori","Tetori","Nëntori","Dhjetori"];
   var MSHORT = ["Jan","Shk","Mar","Pri","Maj","Qer","Kor","Gus","Sht","Tet","Nën","Dhj"];
   var WD = ["e Diel","e Hënë","e Martë","e Mërkurë","e Enjte","e Premte","e Shtunë"];
-  var $ = function (id) { return document.getElementById(id); };
+  var WD_SHORT = ["Hë","Ma","Më","En","Pr","Sh","Di"];
   var KEY = "all-expenses-v1";
+  var $ = function (id) { return document.getElementById(id); };
 
-  // ---------- state ----------
-  var items = new Map();     // id -> expense
-  var salaries = new Map();  // "YYYY-MM" -> amount
+  // ================= Gjendja =================
+  var items = new Map();      // id -> shpenzim
+  var salaries = new Map();   // "YYYY-MM" -> shuma
+  var fixed = [];             // [{id, amount, cat, note}]
+  var fixedApplied = {};      // "YYYY-MM" -> true
+  var goals = [];             // [{id, name, target, deposits:[{d, a, from?}]}]
+  var settings = {};          // {payday, lastCat, depositedFrom:{}}
   var viewMonth = ym(new Date());
-  var editingId = null, pending = [], pendingSalary = null;
-  var fixed = [];          // [{id, amount, cat, note}]
-  var fixedApplied = {};   // "YYYY-MM" -> true
-  var storageOk = true, firstPaint = true;
+  var selDay = null;
+  var firstPaint = true, storageOk = true;
 
-  // ---------- helpers ----------
+  // ================= Ndihmës =================
   function pad(n) { return (n < 10 ? "0" : "") + n; }
   function iso(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
   function ym(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1); }
+  function today() { return iso(new Date()); }
+  function cur() { return ym(new Date()); }
   function daysIn(m) { var p = m.split("-"); return new Date(+p[0], +p[1], 0).getDate(); }
   function shiftMonth(m, k) { var p = m.split("-"); return ym(new Date(+p[0], +p[1] - 1 + k, 1)); }
   function monthName(m) { var p = m.split("-"); return MONTHS[+p[1] - 1] + " " + p[0]; }
@@ -406,21 +610,20 @@ details.manual[open] summary::before { content: "− "; }
   function fmt(n) {
     var r = Math.round(Math.abs(n) * 100) / 100;
     var s = (Math.round(r) === r ? String(r) : r.toFixed(2)).split(".");
-    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
     return (n < 0 ? "−" : "") + s.join(",");
+  }
+  function shortAmt(n) {
+    var a = Math.abs(n), s = n < 0 ? "−" : "";
+    if (a >= 1000) return s + (Math.round(a / 100) / 10).toString().replace(".", ",") + "k";
+    return s + Math.round(a);
   }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function dayLabel(d) { var p = d.split("-"); var dt = new Date(+p[0], +p[1] - 1, +p[2]); return WD[dt.getDay()] + ", " + (+p[2]) + " " + MONTHS[+p[1] - 1]; }
   function newId() { return "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-  function defaultDate() {
-    var now = new Date(), cur = ym(now);
-    if (viewMonth === cur) return iso(now);
-    return viewMonth < cur ? viewMonth + "-" + pad(daysIn(viewMonth)) : viewMonth + "-01";
-  }
-  var toastT;
-  function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3200); }
-  function note(msg) { var n = $("note"); if (msg) { n.textContent = msg; n.hidden = false; } else n.hidden = true; }
-
+  function icon(id) { return '<svg class="i" viewBox="0 0 24 24">' + (ICONS[id] || ICONS.tjeter) + "</svg>"; }
+  function catIco(id) { var c = CAT[id] || CAT.tjeter; return '<div class="ico" style="background:' + c.color + '" aria-hidden="true">' + icon(c.id) + "</div>"; }
+  function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms || 10); } catch (e) {} }
   function salaryFor(m) {
     if (salaries.has(m)) return { amount: salaries.get(m), own: true };
     var best = null, bm = "";
@@ -435,35 +638,73 @@ details.manual[open] summary::before { content: "− "; }
   }
   function byCat(list) { var t = {}; list.forEach(function (e) { t[e.cat] = (t[e.cat] || 0) + e.amount; }); return t; }
   function sum(list) { return list.reduce(function (s, e) { return s + e.amount; }, 0); }
+  function savedIn(m) { var s = salaryFor(m); return s ? s.amount - sum(monthItems(m)) : null; }
 
-  // ---------- storage (në telefon) ----------
+  // ================= Toast me "Kthe" =================
+  var toastT;
+  function toast(msg, action) {
+    var t = $("toast"), b = $("toastBtn");
+    $("toastMsg").textContent = msg;
+    if (action) { b.textContent = action.label; b.hidden = false; b.onclick = function () { t.hidden = true; action.fn(); }; }
+    else { b.hidden = true; b.onclick = null; }
+    t.hidden = false; clearTimeout(toastT);
+    toastT = setTimeout(function () { t.hidden = true; }, action ? 4500 : 3000);
+  }
+  function note(msg) { var n = $("note"); if (msg) { n.textContent = msg; n.hidden = false; } else n.hidden = true; }
+
+  // ================= Ruajtja në telefon =================
   function load() {
     try {
-      var raw = localStorage.getItem(KEY);
-      if (!raw) return;
+      var raw = localStorage.getItem(KEY); if (!raw) return;
       var d = JSON.parse(raw);
       items = new Map(Object.entries(d.items || {}));
       salaries = new Map(Object.entries(d.salaries || {}));
       fixed = Array.isArray(d.fixed) ? d.fixed : [];
       fixedApplied = d.fixedApplied || {};
+      goals = Array.isArray(d.goals) ? d.goals : [];
+      settings = d.settings || {};
     } catch (e) { storageOk = false; }
   }
-  function persist() {
-    try {
-      var d = { v: 1, savedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries), fixed: fixed, fixedApplied: fixedApplied };
-      localStorage.setItem(KEY, JSON.stringify(d));
-      return true;
-    } catch (e) {
-      storageOk = false;
-      note("Telefoni nuk e lejoi ruajtjen. Shkarko një backup që të mos humbasësh të dhënat.");
-      return false;
-    }
+  function snapshot() {
+    return { v: 3, savedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries), fixed: fixed, fixedApplied: fixedApplied, goals: goals, settings: settings };
   }
-  function putExpense(id, body) { items.set(id, body); persist(); render(); return true; }
-  function removeExpense(id) { items.delete(id); persist(); render(); }
-  function putSalary(m, amount) { salaries.set(m, amount); persist(); render(); return true; }
+  function persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(snapshot())); return true; }
+    catch (e) { storageOk = false; note("Telefoni nuk e lejoi ruajtjen. Shkarko një backup që të mos humbasësh të dhënat."); return false; }
+  }
 
-  // ---------- render ----------
+  // ================= Shpenzimet bazë =================
+  function fixedTotal() { return fixed.reduce(function (s, f) { return s + f.amount; }, 0); }
+  function applyFixed(m) {
+    var now = Date.now();
+    fixed.forEach(function (f, i) { items.set(newId(), { kind: "expense", amount: f.amount, cat: f.cat, note: f.note, date: m + "-01", month: m, createdAt: now + i, fixed: true }); });
+    fixedApplied[m] = true; persist();
+  }
+  function autoApplyFixed() {
+    var c = cur();
+    if (fixed.length && !fixedApplied[c]) { applyFixed(c); toast("U shtuan shpenzimet bazë të " + monthGen(c) + ": −" + fmt(fixedTotal()) + " L"); }
+  }
+
+  // ================= Navigimi =================
+  var VIEWS = ["sot", "muaji", "kursimet", "cilesimet"];
+  var curView = null;
+  function route() {
+    var v = (location.hash || "#sot").slice(1);
+    if (VIEWS.indexOf(v) < 0) v = "sot";
+    VIEWS.forEach(function (n) { $("v-" + n).hidden = n !== v; });
+    document.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("on", t.getAttribute("data-tab") === v); if (t.getAttribute("data-tab") === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
+    $("viewTitle").textContent = v === "sot" ? dayLabel(today()) : $("v-" + v).getAttribute("data-title");
+    if (curView !== null && curView !== v) window.scrollTo(0, 0);
+    curView = v;
+  }
+  window.addEventListener("hashchange", route);
+
+  // ================= Rendi =================
+  function renderAll() {
+    renderSot(); renderMuaji(); renderKursimet(); renderCilesimet();
+    firstPaint = false;
+  }
+
   function countUp(el, to, suffixHTML) {
     var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!firstPaint || reduce || to === 0) { el.innerHTML = fmt(to) + suffixHTML; return; }
@@ -475,252 +716,372 @@ details.manual[open] summary::before { content: "− "; }
     })(t0);
   }
 
-  function render() {
-    var now = new Date(), cur = ym(now);
-    $("monthLabel").textContent = monthName(viewMonth);
-    var list = monthItems(viewMonth);
-    var spent = sum(list);
-    var prevTotal = sum(monthItems(shiftMonth(viewMonth, -1)));
-    var dim = daysIn(viewMonth);
-    var isCur = viewMonth === cur, isPast = viewMonth < cur;
-    var daysLeft = isCur ? dim - now.getDate() + 1 : (isPast ? 0 : dim);
-    var sal = salaryFor(viewMonth);
+  // ---------- Sot ----------
+  function paydayInfo() {
+    var pd = +settings.payday; if (!pd) return null;
+    var now = new Date(), t = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var at = function (y, m) { return new Date(y, m, Math.min(pd, new Date(y, m + 1, 0).getDate())); };
+    var y = t.getFullYear(), m = t.getMonth(), thisPd = at(y, m), next, prev;
+    if (t <= thisPd) { next = thisPd; prev = at(y, m - 1); } else { next = at(y, m + 1); prev = thisPd; }
+    var days = Math.round((next - t) / 864e5), period = Math.max(1, Math.round((next - prev) / 864e5));
+    return { days: days, progress: Math.min(1, Math.max(0, 1 - days / period)) };
+  }
+  function renderPayring() {
+    var el = $("payring"), info = paydayInfo(), R = 26, C = 2 * Math.PI * R;
+    if (!info) {
+      el.innerHTML = '<svg viewBox="0 0 62 62"><circle cx="31" cy="31" r="' + R + '" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5" stroke-dasharray="3 5"/><text x="31" y="37" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">?</text></svg><span class="pl">Vendos ditën e rrogës</span>';
+      return;
+    }
+    var off = C * (1 - info.progress);
+    el.innerHTML = '<svg viewBox="0 0 62 62"><circle cx="31" cy="31" r="' + R + '" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/>' +
+      '<circle cx="31" cy="31" r="' + R + '" fill="none" stroke="#4EC48C" stroke-width="5" stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 31 31)"/>' +
+      '<text x="31" y="' + (info.days ? 36 : 37) + '" text-anchor="middle" fill="currentColor" font-size="' + (info.days ? 19 : 15) + '" font-weight="700">' + (info.days ? info.days : "Sot") + "</text></svg>" +
+      '<span class="pl">' + (info.days === 0 ? "vjen rroga!" : info.days === 1 ? "ditë deri në rrogë" : "ditë deri në rrogë") + "</span>";
+  }
 
-    // ----- hero
-    var needSetup = !sal;
-    $("setup").hidden = !needSetup;
-    $("state").hidden = needSetup;
-    if (needSetup) {
-      $("setupTitle").textContent = "Sa është rroga e " + monthGen(viewMonth) + "?";
+  function renderSot() {
+    var now = new Date(), c = cur(), list = monthItems(c), spent = sum(list), sal = salaryFor(c);
+    var dim = daysIn(c), daysLeft = dim - now.getDate() + 1;
+    var prevTotal = sum(monthItems(shiftMonth(c, -1)));
+    $("setup").hidden = !!sal; $("state").hidden = !sal;
+    if (!sal) {
+      $("setupTitle").textContent = "Sa është rroga e " + monthGen(c) + "?";
       $("setupEyebrow").textContent = list.length ? "Ke " + fmt(spent) + " L shpenzime këtë muaj" : "Fillimi i muajit";
     } else {
-      var salary = sal.amount;
-      var left = salary - spent;
-      var leftEl = $("left");
+      var salary = sal.amount, left = salary - spent, leftEl = $("left");
       leftEl.classList.toggle("neg", left < 0);
-      countUp(leftEl, left, "<span class=\"cur\">lekë</span>");
+      countUp(leftEl, left, '<span class="cur">lekë</span>');
       $("sub").innerHTML = "nga <b>" + fmt(salary) + " L</b> rrogë · shpenzuar <b>" + fmt(spent) + " L</b>";
-      var tag = $("tag");
+      var tag = $("tag"), fx = sum(list.filter(function (e) { return e.fixed; })), free = salary - fx;
       if (left < 0) { tag.textContent = "Mbi rrogë"; tag.className = "tag bad"; tag.hidden = false; }
-      else if (isCur && salary > 0 && (function () { var fx = sum(list.filter(function (e) { return e.fixed; })); var free = salary - fx; return free > 0 && (spent - fx) / free > (now.getDate() / dim) + 0.1; })()) { tag.textContent = "Po shpenzon shpejt"; tag.className = "tag"; tag.hidden = false; }
+      else if (free > 0 && (spent - fx) / free > (now.getDate() / dim) + 0.1) { tag.textContent = "Po shpenzon shpejt"; tag.className = "tag"; tag.hidden = false; }
       else tag.hidden = true;
-
-      var bc = byCat(list);
-      var cats = Object.keys(bc).sort(function (a, b) { return bc[b] - bc[a]; });
+      var bc = byCat(list), cats = Object.keys(bc).sort(function (a, b) { return bc[b] - bc[a]; });
       var base = Math.max(salary, spent) || 1;
       var html = cats.map(function (k) {
-        var c = CAT[k] || CAT.tjeter;
-        return "<div class=\"seg\" style=\"background:" + c.color + ";flex-grow:" + (firstPaint ? 0.0001 : bc[k] / base) + "\" data-g=\"" + (bc[k] / base) + "\" title=\"" + esc(c.name) + ": " + fmt(bc[k]) + " L\"></div>";
+        var cc = CAT[k] || CAT.tjeter;
+        return '<div class="seg" style="background:' + cc.color + ";flex-grow:" + (firstPaint ? 0.0001 : bc[k] / base) + '" data-g="' + (bc[k] / base) + '" title="' + esc(cc.name) + ": " + fmt(bc[k]) + ' L"></div>';
       }).join("");
-      if (left > 0) html += "<div class=\"seg rest\" style=\"flex-grow:" + (firstPaint ? 1 : left / base) + "\" data-g=\"" + (left / base) + "\" title=\"Të mbetura: " + fmt(left) + " L\"></div>";
-      if (left < 0 && salary > 0) html += "<div class=\"over\" style=\"left:" + (salary / base * 100).toFixed(1) + "%\" title=\"Kufiri i rrogës\"></div>";
+      if (left > 0) html += '<div class="seg rest" style="flex-grow:' + (firstPaint ? 1 : left / base) + '" data-g="' + (left / base) + '" title="Të mbetura: ' + fmt(left) + ' L"></div>';
+      if (left < 0 && salary > 0) html += '<div class="over" style="left:' + (salary / base * 100).toFixed(1) + '%"></div>';
       var strip = $("strip"); strip.innerHTML = html;
       if (firstPaint) requestAnimationFrame(function () { requestAnimationFrame(function () { strip.querySelectorAll(".seg").forEach(function (s) { s.style.flexGrow = s.getAttribute("data-g"); }); }); });
-      $("usedPct").textContent = salary ? Math.round(spent / salary * 100) + "% e rrogës u shpenzua" : "";
+      $("usedPct").textContent = Math.round(spent / salary * 100) + "% e rrogës u shpenzua";
       $("salaryLbl").textContent = fmt(salary) + " L";
-
-      if (daysLeft > 0 && left > 0) { $("perDayK").textContent = "Mund të shpenzosh në ditë"; $("perDay").innerHTML = fmt(Math.floor(left / daysLeft)) + " L <small>· " + daysLeft + " ditë</small>"; }
-      else if (left <= 0) { $("perDayK").textContent = "Mund të shpenzosh në ditë"; $("perDay").textContent = "0 L"; }
-      else { $("perDayK").textContent = "Të kursyera"; $("perDay").textContent = fmt(left) + " L"; }
+      $("perDay").innerHTML = left > 0 ? fmt(Math.floor(left / daysLeft)) + " L <small>· " + daysLeft + " ditë</small>" : "0 L";
       $("spent").textContent = fmt(spent) + " L";
-      if (prevTotal > 0) { var ch = (spent - prevTotal) / prevTotal * 100; $("vsPrev").textContent = (ch >= 0 ? "+" : "−") + Math.abs(Math.round(ch)) + "%"; }
-      else $("vsPrev").textContent = "—";
-      $("salaryNote").textContent = !sal.own ? "Rroga e marrë nga " + monthName(sal.from) + "." : "Rroga e " + monthGen(viewMonth) + ".";
+      $("vsPrev").textContent = prevTotal > 0 ? ((spent >= prevTotal ? "+" : "−") + Math.abs(Math.round((spent - prevTotal) / prevTotal * 100)) + "%") : "—";
+      renderPayring();
     }
+    renderQuick();
+    var t = today(), tl = list.filter(function (e) { return e.date === t; });
+    $("todayTotal").textContent = tl.length ? "−" + fmt(sum(tl)) + " L" : "";
+    $("todayList").innerHTML = tl.length ? rowsHTML(tl, null, false) : '<p class="empty">Asnjë shpenzim sot. Shtyp butonin e kuq <b>+</b> për të shtuar.</p>';
+  }
 
-    // ----- categories
-    var bc2 = byCat(list);
-    var rows = Object.keys(bc2).sort(function (a, b) { return bc2[b] - bc2[a]; });
-    var salAmt = sal ? sal.amount : 0;
+  // ---------- Shto shpejt (#4) ----------
+  function frequent() {
+    var cutoff = iso(new Date(Date.now() - 120 * 864e5)), map = {};
+    items.forEach(function (e) {
+      if (e.fixed || e.date < cutoff) return;
+      var k = (e.note || "").trim().toLowerCase() + "|" + e.cat + "|" + e.amount;
+      var m = map[k] || (map[k] = { note: (e.note || "").trim(), cat: e.cat, amount: e.amount, count: 0, last: 0 });
+      m.count++; m.last = Math.max(m.last, e.createdAt || 0);
+    });
+    return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return b.count - a.count || b.last - a.last; }).slice(0, 8);
+  }
+  var quickList = [];
+  function renderQuick() {
+    quickList = frequent();
+    $("quickWrap").hidden = !quickList.length;
+    $("qchips").innerHTML = quickList.map(function (q, i) {
+      var c = CAT[q.cat] || CAT.tjeter;
+      return '<button type="button" class="qchip" data-q="' + i + '">' + catIco(q.cat) + "<span><b>" + esc(q.note || c.short) + '</b><span class="a">' + fmt(q.amount) + " L" + (q.count > 1 ? " · " + q.count + "×" : "") + "</span></span></button>";
+    }).join("");
+  }
+  $("qchips").addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-q]"); if (!b) return;
+    var q = quickList[+b.getAttribute("data-q")]; if (!q) return;
+    var id = newId(), d = today();
+    items.set(id, { kind: "expense", amount: q.amount, cat: q.cat, note: q.note, date: d, month: d.slice(0, 7), createdAt: Date.now() });
+    persist(); buzz(12); renderAll();
+    toast("U shtua: " + (q.note || CAT[q.cat].short) + " −" + fmt(q.amount) + " L", { label: "Kthe", fn: function () { items.delete(id); persist(); renderAll(); } });
+  });
+
+  // ---------- Rreshtat (me rrëshqitje #7) ----------
+  function rowsHTML(list, salAmt, grouped) {
+    var bal = {};
+    if (salAmt) { var run = salAmt; list.slice().reverse().forEach(function (e) { run -= e.amount; bal[e.id] = run; }); }
+    var h = "", last = null, dayTotals = {};
+    if (grouped) list.forEach(function (e) { dayTotals[e.date] = (dayTotals[e.date] || 0) + e.amount; });
+    list.forEach(function (e) {
+      if (grouped && e.date !== last) {
+        if (last) h += "</div>";
+        h += '<div class="day"><div class="dayhead"><span>' + esc(dayLabel(e.date)) + "</span><span>−" + fmt(dayTotals[e.date]) + " L</span></div>";
+        last = e.date;
+      }
+      var c = CAT[e.cat] || CAT.tjeter;
+      h += '<div class="swipe" data-id="' + esc(e.id) + '"><div class="bg"><span class="e">Ndrysho</span><span class="e r">Fshi</span></div>' +
+        '<div class="tx" tabindex="0" data-id="' + esc(e.id) + '">' + catIco(e.cat) +
+        '<div class="who"><div class="t">' + esc(e.note || c.short) + '</div><div class="c">' + esc(c.name) + (e.fixed ? ' · <span class="basetag">bazë</span>' : "") + "</div></div>" +
+        '<div class="a"><span class="m">−' + fmt(e.amount) + " L</span>" + (salAmt ? '<span class="bal' + (bal[e.id] < 0 ? " neg" : "") + '">mbeten ' + fmt(bal[e.id]) + "</span>" : "") + "</div></div></div>";
+    });
+    if (grouped && last) h += "</div>";
+    return h;
+  }
+
+  function deleteWithUndo(id) {
+    var old = items.get(id); if (!old) return;
+    items.delete(id); persist(); buzz(18); renderAll();
+    toast("U fshi: " + (old.note || CAT[old.cat].short) + " · " + fmt(old.amount) + " L", { label: "Kthe", fn: function () { items.set(id, old); persist(); renderAll(); } });
+  }
+
+  function attachSwipe(container) {
+    var s = null, TH = 90;
+    container.addEventListener("pointerdown", function (e) {
+      var tx = e.target.closest(".tx"); if (!tx || e.button > 0) return;
+      s = { x: e.clientX, y: e.clientY, tx: tx, wrap: tx.parentElement, id: tx.getAttribute("data-id"), dx: 0, swiping: false, passed: false, pid: e.pointerId };
+    });
+    container.addEventListener("pointermove", function (e) {
+      if (!s || e.pointerId !== s.pid) return;
+      var dx = e.clientX - s.x, dy = e.clientY - s.y;
+      if (!s.swiping) {
+        if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.3) { s.swiping = true; try { s.tx.setPointerCapture(s.pid); } catch (er) {} }
+        else if (Math.abs(dy) > 10) { s = null; return; }
+        else return;
+      }
+      var t = Math.abs(dx) > 140 ? Math.sign(dx) * (140 + (Math.abs(dx) - 140) * 0.3) : dx;
+      s.dx = dx; s.tx.style.transform = "translateX(" + t + "px)";
+      s.wrap.classList.toggle("todel", dx < 0); s.wrap.classList.toggle("toedit", dx > 0);
+      var passed = Math.abs(dx) > TH; if (passed !== s.passed) { s.passed = passed; if (passed) buzz(8); }
+    });
+    function end(e, cancelled) {
+      if (!s || (e && e.pointerId !== s.pid)) return;
+      var st = s; s = null;
+      if (!st.swiping) { if (!cancelled) openSheet(st.id); return; }
+      st.tx.classList.add("anim");
+      if (!cancelled && st.dx < -TH) {
+        st.tx.style.transform = "translateX(-110%)";
+        setTimeout(function () { deleteWithUndo(st.id); }, 180);
+        return;
+      }
+      st.tx.style.transform = "";
+      setTimeout(function () { st.tx.classList.remove("anim"); st.wrap.classList.remove("todel", "toedit"); }, 230);
+      if (!cancelled && st.dx > TH) openSheet(st.id);
+    }
+    container.addEventListener("pointerup", function (e) { end(e, false); });
+    container.addEventListener("pointercancel", function (e) { end(e, true); });
+    container.addEventListener("keydown", function (e) {
+      var tx = e.target.closest(".tx"); if (!tx) return;
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSheet(tx.getAttribute("data-id")); }
+      if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); deleteWithUndo(tx.getAttribute("data-id")); }
+    });
+  }
+  attachSwipe($("todayList")); attachSwipe($("txlist"));
+
+  // ---------- Muaji (#3 kalendari) ----------
+  function renderMuaji() {
+    var m = viewMonth, c = cur(), list = monthItems(m), spent = sum(list), sal = salaryFor(m);
+    $("monthLabel").textContent = monthName(m);
+    $("mSalary").textContent = sal ? fmt(sal.amount) + " L" : "—";
+    $("mSpent").textContent = fmt(spent) + " L";
+    var left = sal ? sal.amount - spent : null;
+    $("mLeftK").textContent = m < c ? (left !== null && left < 0 ? "Tejkalove" : "Kurseve") : "Mbeten";
+    var lv = $("mLeft"); lv.textContent = left === null ? "—" : fmt(left) + " L"; lv.className = "v" + (left === null ? "" : left < 0 ? " bad" : " good");
+    var fb = $("applyFixedBtn"), can = fixed.length && m <= c && !fixedApplied[m];
+    fb.hidden = !can; if (can) fb.textContent = "Shto shpenzimet bazë për " + monthName(m) + " · −" + fmt(fixedTotal()) + " L";
+
+    // kalendari
+    var p = m.split("-"), first = new Date(+p[0], +p[1] - 1, 1), off = (first.getDay() + 6) % 7, dim = daysIn(m), t = today();
+    var dayVar = {}, dayFx = {};
+    list.forEach(function (e) { if (e.fixed) dayFx[e.date] = true; else dayVar[e.date] = (dayVar[e.date] || 0) + e.amount; });
+    var max = 0; Object.keys(dayVar).forEach(function (k) { max = Math.max(max, dayVar[k]); });
+    var h = WD_SHORT.map(function (w) { return '<div class="wd">' + w + "</div>"; }).join("");
+    for (var i = 0; i < off; i++) h += '<div class="blank"></div>';
+    for (var d = 1; d <= dim; d++) {
+      var ds = m + "-" + pad(d), v = dayVar[ds] || 0, k = max ? v / max : 0;
+      var a = v ? 0.14 + 0.86 * Math.sqrt(k) : 0;
+      var style = v ? ' style="background:rgba(var(--heat),' + a.toFixed(2) + ')"' : "";
+      var cls = "d" + (a > 0.55 ? " hot" : "") + (ds === t ? " today" : "") + (ds === selDay ? " sel" : "") + (ds > t ? " future" : "");
+      h += '<button type="button" class="' + cls + '" data-day="' + ds + '"' + style + ' aria-label="' + esc(dayLabel(ds)) + (v ? ": " + fmt(v) + " L" : "") + '"><span class="n">' + d + "</span>" + (dayFx[ds] ? '<span class="fx"></span>' : "") + '<span class="s">' + (v ? shortAmt(v) : "") + "</span></button>";
+    }
+    $("cal").innerHTML = h;
+    $("calSw").innerHTML = [0.14, 0.35, 0.55, 0.78, 1].map(function (x) { return '<i style="background:rgba(var(--heat),' + x + ')"></i>'; }).join("");
+    if (selDay && selDay.slice(0, 7) === m) {
+      var sd = list.filter(function (e) { return e.date === selDay; });
+      $("calInfo").textContent = (+selDay.slice(8)) + " " + MONTHS[+p[1] - 1] + " · " + fmt(sum(sd)) + " L";
+    } else $("calInfo").textContent = "prek një ditë";
+
+    // kategoritë
+    var bc = byCat(list), rows = Object.keys(bc).sort(function (a, b) { return bc[b] - bc[a]; }), salAmt = sal ? sal.amount : 0;
     $("catlist").innerHTML = rows.length ? rows.map(function (k) {
-      var c = CAT[k] || CAT.tjeter;
-      var pct = salAmt ? Math.round(bc2[k] / salAmt * 100) + "% e rrogës" : Math.round(bc2[k] / spent * 100) + "%";
-      return "<div class=\"cat\"><span class=\"dot\" style=\"background:" + c.color + "\"></span><span>" + esc(c.name) + "</span><span class=\"amt\">" + fmt(bc2[k]) + " L<span class=\"pc\">" + pct + "</span></span></div>";
-    }).join("") : "<p class=\"empty\">Kur të shtosh shpenzime, këtu sheh ku shkon rroga.</p>";
+      var cc = CAT[k] || CAT.tjeter, pct = salAmt ? Math.round(bc[k] / salAmt * 100) + "% e rrogës" : Math.round(bc[k] / spent * 100) + "%";
+      return '<div class="cat"><span class="dot" style="background:' + cc.color + '"></span><span>' + esc(cc.name) + '</span><span class="amt">' + fmt(bc[k]) + ' L<span class="pc">' + pct + "</span></span></div>";
+    }).join("") : '<p class="empty">Kur të shtosh shpenzime, këtu sheh ku shkon rroga.</p>';
 
-    // ----- transactions with running balance
-    $("count").textContent = list.length ? list.length + " lëvizje" : "";
-    var tl = $("txlist");
-    if (!list.length) { tl.innerHTML = "<p class=\"empty\">Ende pa shpenzime për " + esc(monthName(viewMonth)) + ".</p>"; }
-    else {
-      var asc = list.slice().reverse(), run = salAmt, bal = {};
-      asc.forEach(function (e) { run -= e.amount; bal[e.id] = run; });
-      var dayTotals = {}; list.forEach(function (e) { dayTotals[e.date] = (dayTotals[e.date] || 0) + e.amount; });
-      var h = "", last = null;
-      list.forEach(function (e) {
-        if (e.date !== last) {
-          if (last) h += "</div>";
-          h += "<div class=\"day\"><div class=\"dayhead\"><span>" + esc(dayLabel(e.date)) + "</span><span>−" + fmt(dayTotals[e.date]) + " L</span></div>";
-          last = e.date;
-        }
-        var c = CAT[e.cat] || CAT.tjeter;
-        h += "<div class=\"tx\"><div class=\"ico\" style=\"background:" + c.color + "\" aria-hidden=\"true\">" + c.ab + "</div>" +
-          "<div class=\"who\" data-edit=\"" + esc(e.id) + "\" role=\"button\" tabindex=\"0\" title=\"Prek për ta ndryshuar\"><div class=\"t\">" + esc(e.note || c.name) + "</div><div class=\"c\">" + esc(c.name) + (e.fixed ? " · <span class=\"basetag\">bazë</span>" : "") + "</div></div>" +
-          "<div class=\"a\"><span class=\"m\">−" + fmt(e.amount) + " L</span>" + (salAmt ? "<span class=\"bal" + (bal[e.id] < 0 ? " neg" : "") + "\">mbeten " + fmt(bal[e.id]) + "</span>" : "") + "</div>" +
-          "<button type=\"button\" class=\"del\" data-del=\"" + esc(e.id) + "\" aria-label=\"Fshi\">✕</button></div>";
-      });
-      tl.innerHTML = h + "</div>";
-    }
+    // lista
+    var shown = selDay && selDay.slice(0, 7) === m ? list.filter(function (e) { return e.date === selDay; }) : list;
+    $("listFilter").innerHTML = selDay && selDay.slice(0, 7) === m ? '<button type="button" class="filterchip" id="clearDay">' + (+selDay.slice(8)) + " " + MONTHS[+p[1] - 1] + " ✕</button>" : '<small class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">' + (list.length ? list.length + " lëvizje" : "") + "</small>";
+    var cd = $("clearDay"); if (cd) cd.onclick = function () { selDay = null; renderMuaji(); };
+    $("txlist").innerHTML = shown.length ? rowsHTML(shown, salAmt, true) : '<p class="empty">' + (selDay ? "Asnjë shpenzim këtë ditë." : "Ende pa shpenzime për " + esc(monthName(m)) + ".") + "</p>";
+    $("swipeHint").hidden = !shown.length;
+  }
+  $("cal").addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-day]"); if (!b) return;
+    var d = b.getAttribute("data-day"); selDay = selDay === d ? null : d; buzz(6); renderMuaji();
+  });
+  $("prevM").addEventListener("click", function () { viewMonth = shiftMonth(viewMonth, -1); selDay = null; renderMuaji(); });
+  $("nextM").addEventListener("click", function () { viewMonth = shiftMonth(viewMonth, 1); selDay = null; renderMuaji(); });
+  $("applyFixedBtn").addEventListener("click", function () { applyFixed(viewMonth); renderAll(); toast("−" + fmt(fixedTotal()) + " L shpenzime bazë për " + monthName(viewMonth)); });
 
-    renderSavings();
-    renderFixed();
-    $("dataInfo").textContent = items.size ? items.size + " shpenzime gjithsej" : "";
-    firstPaint = false;
+  // ---------- Kursimet (#5) ----------
+  function goalSaved(g) { return (g.deposits || []).reduce(function (s, d) { return s + d.a; }, 0); }
+  function avgMonthlySave() {
+    var c = cur(), vals = [];
+    for (var i = 1; i <= 3; i++) { var m = shiftMonth(c, -i), v = savedIn(m); if (v !== null && monthItems(m).length) vals.push(v); }
+    return vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
   }
-
-  // ----- shpenzimet bazë
-  function fixedTotal() { return fixed.reduce(function (s, f) { return s + f.amount; }, 0); }
-  function renderFixed() {
-    var cur = ym(new Date());
-    $("fixedTotal").textContent = fixed.length ? fmt(fixedTotal()) + " L / muaj" : "";
-    $("fixedList").innerHTML = fixed.length ? fixed.map(function (f) {
-      var c = CAT[f.cat] || CAT.tjeter;
-      return "<div class=\"cat\"><span class=\"dot\" style=\"background:" + c.color + "\"></span><span>" + esc(f.note || c.name) + "<span class=\"pc\">" + esc(c.name) + "</span></span><span class=\"famt\"><span class=\"amt\">" + fmt(f.amount) + " L</span><button type=\"button\" class=\"del fdel\" data-fdel=\"" + esc(f.id) + "\" aria-label=\"Hiq nga bazat\">✕</button></span></div>";
-    }).join("") : "<p class=\"empty\">Ende pa shpenzime bazë. Shto qiranë, kredinë, faturat…</p>";
-    var btn = $("applyFixedBtn");
-    var can = fixed.length && viewMonth <= cur && !fixedApplied[viewMonth];
-    btn.hidden = !can;
-    if (can) btn.textContent = "Shto bazat për " + monthName(viewMonth) + " · −" + fmt(fixedTotal()) + " L";
-    $("fixedStatus").textContent = fixed.length && fixedApplied[viewMonth] ? "✓ Të shtuara për " + monthName(viewMonth) + "." : "Futen vetë më 1 të çdo muaji.";
+  function jarSVG(g, pct) {
+    var id = "jc" + g.id.replace(/[^a-z0-9]/gi, ""), body = "M22 18h30v4c9 4 13 10 13 19v36a11 11 0 0 1-11 11H20A11 11 0 0 1 9 77V41c0-9 4-15 13-19z";
+    var fillTop = 88 - 66 * Math.min(1, pct);
+    return '<svg class="jar" viewBox="0 0 74 92" aria-hidden="true"><defs><clipPath id="' + id + '"><path d="' + body + '"/></clipPath></defs>' +
+      '<path d="' + body + '" fill="var(--soft)"/>' +
+      '<g clip-path="url(#' + id + ')"><rect x="0" y="' + fillTop.toFixed(1) + '" width="74" height="92" fill="var(--good)" opacity=".9"/>' +
+      (pct > 0 && pct < 1 ? '<path d="M0 ' + fillTop.toFixed(1) + ' q9 -4 18 0 t18 0 t18 0 t20 0 v6 H0z" fill="var(--good)"/>' : "") + "</g>" +
+      '<path d="' + body + '" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/>' +
+      '<rect x="18" y="8" width="38" height="10" rx="3" fill="var(--accent)"/>' +
+      '<text x="37" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="' + (pct > 0.45 ? "#fff" : "var(--ink)") + '">' + Math.round(pct * 100) + "%</text></svg>";
   }
-  function applyFixed(m) {
-    var now = Date.now();
-    fixed.forEach(function (f, i) {
-      items.set(newId(), { kind: "expense", amount: f.amount, cat: f.cat, note: f.note, date: m + "-01", month: m, createdAt: now + i, fixed: true });
-    });
-    fixedApplied[m] = true;
-    persist();
+  var openGoalForm = null;
+  function renderKursimet() {
+    var c = cur(), avg = avgMonthlySave();
+    // sugjerimi
+    var lastM = shiftMonth(c, -1), lastSaved = savedIn(lastM), dep = settings.depositedFrom || {};
+    if (goals.length && lastSaved > 0 && monthItems(lastM).length && !dep[lastM]) {
+      $("suggest").innerHTML = '<div class="suggest"><div>' + MONTHS_DEF[+lastM.split("-")[1] - 1] + " u mbyll me <b>" + fmt(lastSaved) + " L</b> të kursyera. Kaloji te një synim:</div><div class=\"row\">" +
+        goals.slice(0, 3).map(function (g) { return '<button type="button" class="btn" data-dep="' + esc(g.id) + '">' + esc(g.name) + "</button>"; }).join("") + "</div></div>";
+    } else $("suggest").innerHTML = "";
+    // synimet
+    var tot = 0;
+    $("goals").innerHTML = goals.length ? goals.map(function (g) {
+      var sv = goalSaved(g), pct = g.target > 0 ? sv / g.target : 0, rem = g.target - sv; tot += sv;
+      var est = rem <= 0 ? '<div class="gest done">Synimi u arrit</div>' : (avg && avg > 0 ? '<div class="gest">≈ ' + Math.ceil(rem / avg) + " muaj me ritmin e tanishëm (" + fmt(Math.round(avg)) + " L/muaj)</div>" : '<div class="gest muted">Kurse çdo muaj dhe shtoje këtu.</div>');
+      var form = openGoalForm === g.id ? '<form class="gform" data-gf="' + esc(g.id) + '"><input type="number" min="0" step="any" inputmode="numeric" placeholder="Shuma (L)" aria-label="Shuma" required><button class="btn primary" type="submit" data-sign="1">Shto</button><button class="btn" type="submit" data-sign="-1">Tërhiq</button></form>' :
+        '<div class="gbtns"><button type="button" class="btn" data-gopen="' + esc(g.id) + '">+ Shto para</button></div>';
+      return '<div class="goal">' + jarSVG(g, Math.max(0, pct)) + '<div><div class="gn"><span>' + esc(g.name) + '</span><button type="button" class="fdel" data-gdel="' + esc(g.id) + '" aria-label="Fshi synimin">✕</button></div>' +
+        '<div class="gv"><b>' + fmt(sv) + " L</b> nga " + fmt(g.target) + " L</div>" + est + form + "</div></div>";
+    }).join("") : '<p class="empty">Krijo një synim (p.sh. pushime, makinë, fond emergjence) dhe shiko kavanozin të mbushet.</p>';
+    $("goalsTotal").textContent = goals.length ? fmt(tot) + " L gjithsej" : "";
+    var f = document.querySelector("[data-gf] input"); if (f) f.focus();
+    renderSavingsBars();
   }
-  function autoApplyFixed() {
-    var cur = ym(new Date());
-    if (fixed.length && !fixedApplied[cur]) {
-      applyFixed(cur);
-      toast("U shtuan shpenzimet bazë të " + monthGen(cur) + ": −" + fmt(fixedTotal()) + " L");
-    }
-  }
-
-  // ----- savings: 6 muajt deri te muaji që po sheh
-  function renderSavings() {
-    var now = ym(new Date()), months = [];
-    for (var i = 5; i >= 0; i--) months.push(shiftMonth(viewMonth, -i));
-    var data = months.map(function (m) {
-      var s = salaryFor(m), spent = sum(monthItems(m));
-      var has = s && (spent > 0 || m <= now) && m <= now;
-      return { m: m, saved: has ? s.amount - spent : null, partial: m === now };
-    });
+  function renderSavingsBars() {
+    var c = cur(), months = [];
+    for (var i = 5; i >= 0; i--) months.push(shiftMonth(c, -i));
+    var data = months.map(function (m) { var s = salaryFor(m), has = s && (monthItems(m).length > 0 || m === c); return { m: m, saved: has ? s.amount - sum(monthItems(m)) : null, partial: m === c }; });
     var known = data.filter(function (d) { return d.saved !== null; });
     var max = Math.max.apply(null, known.map(function (d) { return Math.abs(d.saved); }).concat([1]));
     $("sbars").innerHTML = data.map(function (d) {
       var mo = MSHORT[+d.m.split("-")[1] - 1];
-      if (d.saved === null) return "<div class=\"sb\"><div class=\"sv\">—</div><div class=\"col\"></div><div class=\"sm\">" + mo + "</div></div>";
-      var h = Math.max(4, Math.abs(d.saved) / max * 100);
-      return "<div class=\"sb" + (d.m === viewMonth ? " on" : "") + "\" title=\"" + monthName(d.m) + ": " + fmt(d.saved) + " L\"><div class=\"sv" + (d.saved < 0 ? " neg" : "") + "\">" + shortAmt(d.saved) + "</div><div class=\"col\"><i class=\"" + (d.saved < 0 ? "neg" : "") + (d.partial ? " part" : "") + "\" style=\"height:" + h.toFixed(0) + "%\"></i></div><div class=\"sm\">" + mo + "</div></div>";
+      if (d.saved === null) return '<div class="sb"><div class="sv">—</div><div class="col"></div><div class="sm">' + mo + "</div></div>";
+      var hh = Math.max(4, Math.abs(d.saved) / max * 100);
+      return '<div class="sb' + (d.partial ? " on" : "") + '"><div class="sv' + (d.saved < 0 ? " neg" : "") + '">' + shortAmt(d.saved) + '</div><div class="col"><i class="' + (d.saved < 0 ? "neg" : "") + (d.partial ? " part" : "") + '" style="height:' + hh.toFixed(0) + '%"></i></div><div class="sm">' + mo + "</div></div>";
     }).join("");
-    var closed = known.filter(function (d) { return !d.partial; });
-    var tot = closed.reduce(function (s, d) { return s + d.saved; }, 0);
-    $("saveTotal").textContent = closed.length ? "gjithsej " + fmt(tot) + " L" : "";
+    var closed = known.filter(function (d) { return !d.partial; }), totS = closed.reduce(function (s, d) { return s + d.saved; }, 0);
+    $("saveTotal").textContent = closed.length ? "gjithsej " + fmt(totS) + " L" : "";
     $("saveHint").textContent = known.length ? "Kursimi = rroga − shpenzimet. Muaji aktual (me vija) është ende në vazhdim." : "Kur të kesh rrogë dhe shpenzime, këtu sheh sa kursen çdo muaj.";
   }
-  function shortAmt(n) {
-    var a = Math.abs(n), s = n < 0 ? "−" : "";
-    if (a >= 1000) return s + (Math.round(a / 100) / 10).toString().replace(".", ",") + "k";
-    return s + Math.round(a);
-  }
-
-  // ---------- month nav ----------
-  function go(k) { viewMonth = shiftMonth(viewMonth, k); $("salaryForm").hidden = true; $("editSalary").hidden = false; render(); }
-  $("prevM").addEventListener("click", function () { go(-1); });
-  $("nextM").addEventListener("click", function () { go(1); });
-
-  // ---------- salary ----------
-  $("setupForm").addEventListener("submit", function (ev) {
-    ev.preventDefault();
-    var v = parseFloat($("setupInput").value);
-    if (!(v > 0)) { toast("Shkruaj shumën e rrogës."); return; }
-    firstPaint = true;
-    putSalary(viewMonth, v); $("setupInput").value = ""; toast("Rroga u ruajt: " + fmt(v) + " L");
-  });
-  $("editSalary").addEventListener("click", function () {
-    var s = salaryFor(viewMonth);
-    $("salaryInput").value = s ? s.amount : ""; $("salaryForm").hidden = false; $("editSalary").hidden = true; $("salaryInput").focus();
-  });
-  $("cancelSalary").addEventListener("click", function () { $("salaryForm").hidden = true; $("editSalary").hidden = false; });
-  $("salaryForm").addEventListener("submit", function (ev) {
-    ev.preventDefault();
-    var v = parseFloat($("salaryInput").value);
-    if (!(v > 0)) { toast("Shkruaj shumën e rrogës."); return; }
-    $("salaryForm").hidden = true; $("editSalary").hidden = false;
-    putSalary(viewMonth, v); toast("Rroga e " + monthGen(viewMonth) + " u ruajt.");
-  });
-
-  // ---------- manual form ----------
-  var mCat = $("mCat");
-  mCat.innerHTML = CATS.map(function (c) { return "<option value=\"" + c.id + "\">" + esc(c.name) + "</option>"; }).join("");
-  $("mDate").value = defaultDate();
-  function resetForm() { editingId = null; $("mform").reset(); $("mDate").value = defaultDate(); $("mSubmit").textContent = "Shto"; $("mCancel").hidden = true; }
-  $("mCancel").addEventListener("click", resetForm);
-  $("mform").addEventListener("submit", function (ev) {
-    ev.preventDefault();
-    var amount = parseFloat($("mAmount").value), date = $("mDate").value;
-    if (!(amount > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast("Plotëso shumën dhe datën."); return; }
-    var id = editingId || newId(), old = editingId ? items.get(editingId) : null;
-    var body = { kind: "expense", amount: amount, cat: mCat.value, note: $("mNote").value.trim(), date: date, month: date.slice(0, 7), createdAt: old && old.createdAt ? old.createdAt : Date.now() };
-    var wasEdit = !!editingId;
-    if (body.month !== viewMonth) viewMonth = body.month;
-    putExpense(id, body);
-    toast(wasEdit ? "Ndryshimi u ruajt." : "−" + fmt(amount) + " L nga rroga");
-    resetForm();
-  });
-
-  // ---------- list actions ----------
-  var armed = null, armT;
-  $("txlist").addEventListener("click", function (ev) {
-    var del = ev.target.closest("[data-del]");
-    if (del) {
-      var id = del.getAttribute("data-del");
-      if (armed === id) { armed = null; clearTimeout(armT); removeExpense(id); toast("U fshi dhe shuma u kthye te rroga."); return; }
-      document.querySelectorAll(".del.armed").forEach(function (b) { b.classList.remove("armed"); b.textContent = "✕"; });
-      armed = id; del.classList.add("armed"); del.textContent = "Fshi?";
-      clearTimeout(armT); armT = setTimeout(function () { armed = null; del.classList.remove("armed"); del.textContent = "✕"; }, 3000);
+  $("v-kursimet").addEventListener("click", function (ev) {
+    var b;
+    if ((b = ev.target.closest("[data-gopen]"))) { openGoalForm = b.getAttribute("data-gopen"); renderKursimet(); return; }
+    if ((b = ev.target.closest("[data-dep]"))) {
+      var g = goals.find(function (x) { return x.id === b.getAttribute("data-dep"); }), lastM = shiftMonth(cur(), -1), amt = savedIn(lastM);
+      if (!g || !(amt > 0)) return;
+      var dep = { d: today(), a: amt, from: lastM };
+      g.deposits = g.deposits || []; g.deposits.push(dep);
+      settings.depositedFrom = settings.depositedFrom || {}; settings.depositedFrom[lastM] = true;
+      persist(); buzz(15); renderKursimet();
+      toast(fmt(amt) + " L kaluan te " + g.name, { label: "Kthe", fn: function () { g.deposits.splice(g.deposits.indexOf(dep), 1); delete settings.depositedFrom[lastM]; persist(); renderKursimet(); } });
       return;
     }
-    var ed = ev.target.closest("[data-edit]");
-    if (ed) startEdit(ed.getAttribute("data-edit"));
+    if ((b = ev.target.closest("[data-gdel]"))) {
+      if (!b.classList.contains("armed")) { b.classList.add("armed"); b.textContent = "Fshi?"; setTimeout(function () { b.classList.remove("armed"); b.textContent = "✕"; }, 3000); return; }
+      var id = b.getAttribute("data-gdel"), idx = goals.findIndex(function (x) { return x.id === id; }), old = goals[idx];
+      goals.splice(idx, 1); persist(); renderKursimet();
+      toast("Synimi u fshi", { label: "Kthe", fn: function () { goals.splice(idx, 0, old); persist(); renderKursimet(); } });
+    }
   });
-  $("txlist").addEventListener("keydown", function (ev) {
-    if ((ev.key === "Enter" || ev.key === " ") && ev.target.matches("[data-edit]")) { ev.preventDefault(); startEdit(ev.target.getAttribute("data-edit")); }
+  $("v-kursimet").addEventListener("submit", function (ev) {
+    var form = ev.target.closest("[data-gf]"); if (!form) return;
+    ev.preventDefault();
+    var g = goals.find(function (x) { return x.id === form.getAttribute("data-gf"); });
+    var sign = ev.submitter ? +ev.submitter.getAttribute("data-sign") : 1, amt = parseFloat(form.querySelector("input").value);
+    if (!g || !(amt > 0)) { toast("Shkruaj një shumë."); return; }
+    g.deposits = g.deposits || []; g.deposits.push({ d: today(), a: sign * amt });
+    openGoalForm = null; persist(); buzz(12); renderKursimet();
+    toast((sign > 0 ? "+" : "−") + fmt(amt) + " L · " + g.name);
   });
-  function startEdit(id) {
-    var e = items.get(id); if (!e) return;
-    editingId = id;
-    $("mAmount").value = e.amount; $("mDate").value = e.date; mCat.value = CAT[e.cat] ? e.cat : "tjeter"; $("mNote").value = e.note || "";
-    $("mSubmit").textContent = "Ruaj ndryshimet"; $("mCancel").hidden = false;
-    $("manual").open = true; $("add").scrollIntoView({ behavior: "smooth", block: "start" });
-    $("mAmount").focus({ preventScroll: true });
+  $("goalForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var name = $("gName").value.trim(), target = parseFloat($("gTarget").value), start = parseFloat($("gStart").value) || 0;
+    if (!name || !(target > 0)) { toast("Plotëso emrin dhe shumën."); return; }
+    goals.push({ id: "g" + Date.now().toString(36), name: name, target: target, deposits: start > 0 ? [{ d: today(), a: start }] : [] });
+    persist(); $("goalForm").reset(); $("newGoal").open = false; renderKursimet(); toast("Synimi u krijua: " + name);
+  });
+
+  // ---------- Cilësimet ----------
+  var fCat = $("fCat");
+  fCat.innerHTML = CATS.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + "</option>"; }).join("");
+  var ps = $("paydaySel"), opts = '<option value="">Pa caktuar</option>';
+  for (var pd = 1; pd <= 31; pd++) opts += '<option value="' + pd + '">' + pd + " i muajit</option>";
+  ps.innerHTML = opts;
+  function renderCilesimet() {
+    var c = cur(), s = salaryFor(c);
+    $("setMonth").textContent = monthGen(c);
+    $("setSalaryNote").textContent = s ? (s.own ? fmt(s.amount) + " L" : fmt(s.amount) + " L, e marrë nga " + monthName(s.from)) : "Pa vendosur";
+    if (document.activeElement !== $("salaryInput")) $("salaryInput").value = s ? s.amount : "";
+    ps.value = settings.payday ? String(settings.payday) : "";
+    $("fixedTotal").textContent = fixed.length ? fmt(fixedTotal()) + " L / muaj" : "";
+    $("fixedStatus").textContent = fixed.length && fixedApplied[c] ? "✓ Të shtuara për " + monthName(c) + ". Futen vetë më 1 të çdo muaji." : "Futen vetë më 1 të çdo muaji.";
+    $("fixedList").innerHTML = fixed.length ? fixed.map(function (f) {
+      var cc = CAT[f.cat] || CAT.tjeter;
+      return '<div class="cat"><span class="dot" style="background:' + cc.color + '"></span><span>' + esc(f.note || cc.name) + '<span class="pc">' + esc(cc.name) + '</span></span><span class="famt">' + fmt(f.amount) + ' L<button type="button" class="fdel" data-fdel="' + esc(f.id) + '" aria-label="Hiq nga bazat">✕</button></span></div>';
+    }).join("") : '<p class="empty">Ende pa shpenzime bazë. Shto qiranë, kredinë, faturat…</p>';
+    $("dataInfo").textContent = items.size ? items.size + " shpenzime gjithsej" : "";
   }
-
-  // ---------- CSV ----------
-  $("csvBtn").addEventListener("click", async function () {
-    var list = monthItems(viewMonth);
-    if (!list.length) { toast("S'ka asgjë për të kopjuar këtë muaj."); return; }
-    var sal = salaryFor(viewMonth), run = sal ? sal.amount : 0;
-    var q = function (s) { return "\"" + String(s).replace(/"/g, "\"\"") + "\""; };
-    var csv = "Data,Kategoria,Përshkrimi,Shuma (L),Mbetur (L)\n" + list.slice().reverse().map(function (e) {
-      run -= e.amount; return [e.date, q((CAT[e.cat] || CAT.tjeter).name), q(e.note || ""), e.amount, sal ? run : ""].join(",");
-    }).join("\n");
-    try { await navigator.clipboard.writeText(csv); toast("CSV u kopjua. Ngjite në Excel ose Sheets."); }
-    catch (e) { var b = $("csvBox"); b.value = csv; b.hidden = false; b.focus(); b.select(); toast("Kopjoje tekstin poshtë."); }
+  $("salaryForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var v = parseFloat($("salaryInput").value); if (!(v > 0)) { toast("Shkruaj shumën e rrogës."); return; }
+    salaries.set(cur(), v); persist(); firstPaint = true; renderAll(); $("salaryInput").blur(); toast("Rroga e " + monthGen(cur()) + " u ruajt.");
+  });
+  $("setupForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var v = parseFloat($("setupInput").value); if (!(v > 0)) { toast("Shkruaj shumën e rrogës."); return; }
+    salaries.set(cur(), v); persist(); firstPaint = true; $("setupInput").value = ""; renderAll(); toast("Rroga u ruajt: " + fmt(v) + " L");
+  });
+  ps.addEventListener("change", function () { settings.payday = ps.value ? +ps.value : null; persist(); renderAll(); toast(ps.value ? "Rroga vjen më " + ps.value + " të muajit." : "Dita e rrogës u hoq."); });
+  $("payring").addEventListener("click", function () { location.hash = "#cilesimet"; setTimeout(function () { ps.focus(); }, 300); });
+  $("fform").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var amount = parseFloat($("fAmount").value), n = $("fNote").value.trim();
+    if (!(amount > 0) || !n) { toast("Shkruaj emrin dhe shumën."); return; }
+    fixed.push({ id: "f" + Date.now().toString(36), amount: amount, cat: fCat.value, note: n });
+    persist(); $("fform").reset(); renderAll(); toast("U shtua te bazat. Nga muaji tjetër futet vetë.");
+  });
+  $("fixedList").addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-fdel]"); if (!b) return;
+    if (!b.classList.contains("armed")) { b.classList.add("armed"); b.textContent = "Hiq?"; setTimeout(function () { b.classList.remove("armed"); b.textContent = "✕"; }, 3000); return; }
+    var id = b.getAttribute("data-fdel"), idx = fixed.findIndex(function (f) { return f.id === id; }), old = fixed[idx];
+    fixed.splice(idx, 1); persist(); renderAll();
+    toast("U hoq nga bazat", { label: "Kthe", fn: function () { fixed.splice(idx, 0, old); persist(); renderAll(); } });
   });
 
-  // ---------- Backup ----------
+  // backup
   $("exportBtn").addEventListener("click", function () {
-    var d = { app: "ALL – Expenses & Saving", v: 1, exportedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries), fixed: fixed, fixedApplied: fixedApplied };
+    var d = snapshot(); d.app = "ALL – Expenses & Saving"; d.exportedAt = new Date().toISOString();
     var blob = new Blob([JSON.stringify(d, null, 1)], { type: "application/json" });
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "ALL-backup-" + iso(new Date()) + ".json";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "ALL-backup-" + today() + ".json";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
     toast("Backup-i u shkarkua te Downloads.");
   });
   $("importFile").addEventListener("change", function (ev) {
@@ -728,25 +1089,110 @@ details.manual[open] summary::before { content: "− "; }
     var r = new FileReader();
     r.onload = function () {
       try {
-        var d = JSON.parse(r.result);
-        if (!d || typeof d.items !== "object") throw new Error("format");
+        var d = JSON.parse(r.result); if (!d || typeof d.items !== "object") throw new Error("format");
         var added = 0;
-        Object.keys(d.items).forEach(function (id) {
-          var v = d.items[id];
-          if (v && typeof v.amount === "number" && /^\d{4}-\d{2}-\d{2}$/.test(v.date || "")) { if (!items.has(id)) added++; items.set(id, v); }
-        });
+        Object.keys(d.items).forEach(function (id) { var v = d.items[id]; if (v && typeof v.amount === "number" && /^\d{4}-\d{2}-\d{2}$/.test(v.date || "")) { if (!items.has(id)) added++; items.set(id, v); } });
         Object.keys(d.salaries || {}).forEach(function (m) { if (typeof d.salaries[m] === "number") salaries.set(m, d.salaries[m]); });
-        if (Array.isArray(d.fixed)) fixed = d.fixed.filter(function (f) { return f && typeof f.amount === "number" && f.amount > 0; });
+        if (Array.isArray(d.fixed)) fixed = d.fixed.filter(function (x) { return x && typeof x.amount === "number" && x.amount > 0; });
         Object.keys(d.fixedApplied || {}).forEach(function (m) { fixedApplied[m] = true; });
-        persist(); firstPaint = true; autoApplyFixed(); render();
-        toast("Backup-i u ngarkua: " + added + " shpenzime të reja" + (fixed.length ? ", " + fixed.length + " shpenzime bazë." : "."));
+        if (Array.isArray(d.goals)) d.goals.forEach(function (g) { if (g && g.id && !goals.some(function (x) { return x.id === g.id; })) goals.push(g); });
+        if (d.settings && typeof d.settings === "object") settings = Object.assign({}, d.settings, settings);
+        persist(); firstPaint = true; autoApplyFixed(); renderAll();
+        toast("Backup-i u ngarkua: " + added + " shpenzime të reja.");
       } catch (e) { toast("Ky skedar nuk është backup i ALL."); }
       ev.target.value = "";
     };
     r.readAsText(f);
   });
 
-  // ---------- Lexuesi i tekstit (pa internet, falas) ----------
+  // ================= Paneli (#1) =================
+  var sheetOpen = false, reportOpen = false, editingId = null, amtStr = "", selCat = "ushqim", selDate = today(), mode = "pad";
+  var pending = [], pendingSalary = null;
+  function showLayer(el) {
+    $("backdrop").hidden = false; el.hidden = false;
+    requestAnimationFrame(function () { $("backdrop").classList.add("show"); el.classList.add("show"); });
+    history.pushState({ layer: el.id }, "");
+  }
+  function hideLayer(el, fromPop) {
+    $("backdrop").classList.remove("show"); el.classList.remove("show");
+    setTimeout(function () { if (!el.classList.contains("show")) { el.hidden = true; if (!sheetOpen && !reportOpen) $("backdrop").hidden = true; } }, 280);
+    if (!fromPop && history.state && history.state.layer === el.id) history.back();
+  }
+  window.addEventListener("popstate", function () {
+    if (sheetOpen) { sheetOpen = false; hideLayer($("sheet"), true); }
+    if (reportOpen) { reportOpen = false; hideLayer($("reportSheet"), true); }
+  });
+  $("backdrop").addEventListener("click", function () { if (sheetOpen) closeSheet(); if (reportOpen) closeReport(); });
+
+  $("catpick").innerHTML = CATS.map(function (c) { return '<button type="button" data-cat="' + c.id + '">' + catIco(c.id) + '<span class="l">' + esc(c.short) + "</span></button>"; }).join("");
+
+  function setMode(m) {
+    mode = m;
+    document.querySelectorAll("#modeSeg button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-mode") === m); });
+    $("padMode").hidden = m !== "pad"; $("textMode").hidden = m !== "text";
+    if (m === "text") setTimeout(function () { $("quickText").focus(); }, 50);
+  }
+  $("modeSeg").addEventListener("click", function (ev) { var b = ev.target.closest("[data-mode]"); if (b) setMode(b.getAttribute("data-mode")); });
+
+  function openSheet(id) {
+    editingId = id || null;
+    var e = id ? items.get(id) : null;
+    if (id && !e) return;
+    amtStr = e ? String(Math.round(e.amount)) : "";
+    selCat = e ? e.cat : (settings.lastCat && CAT[settings.lastCat] ? settings.lastCat : "ushqim");
+    var vc = viewMonth !== cur() && curView === "muaji" ? (viewMonth < cur() ? viewMonth + "-" + pad(daysIn(viewMonth)) : viewMonth + "-01") : today();
+    selDate = e ? e.date : (selDay && curView === "muaji" ? selDay : vc);
+    $("sNote").value = e ? (e.note || "") : "";
+    $("sheetTitle").textContent = e ? "Ndrysho shpenzimin" : "Shpenzim i ri";
+    $("modeSeg").hidden = !!e; $("sDelete").hidden = !e;
+    setMode("pad"); updatePad();
+    sheetOpen = true; showLayer($("sheet"));
+  }
+  function closeSheet() { if (!sheetOpen) return; sheetOpen = false; hideLayer($("sheet"), false); }
+  $("fab").addEventListener("click", function () { buzz(8); openSheet(null); });
+
+  function updatePad() {
+    var n = Number(amtStr || 0), v = $("amtView");
+    v.innerHTML = fmt(n) + '<span class="cur">L</span>'; v.classList.toggle("zero", !n);
+    document.querySelectorAll("#catpick [data-cat]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-cat") === selCat); });
+    var t = today(), y = iso(new Date(Date.now() - 864e5));
+    document.querySelectorAll("#datechips [data-d]").forEach(function (b) { var d = b.getAttribute("data-d") === "0" ? t : y; b.classList.toggle("on", selDate === d); });
+    $("sDate").value = selDate;
+    var sv = $("sSave"); sv.disabled = !n;
+    sv.textContent = editingId ? "Ruaj ndryshimet" : (n ? "Shto · −" + fmt(n) + " L" : "Shto");
+  }
+  $("catpick").addEventListener("click", function (ev) { var b = ev.target.closest("[data-cat]"); if (!b) return; selCat = b.getAttribute("data-cat"); buzz(5); updatePad(); });
+  $("datechips").addEventListener("click", function (ev) { var b = ev.target.closest("[data-d]"); if (!b) return; selDate = b.getAttribute("data-d") === "0" ? today() : iso(new Date(Date.now() - 864e5)); updatePad(); });
+  $("sDate").addEventListener("change", function () { if (/^\d{4}-\d{2}-\d{2}$/.test($("sDate").value)) { selDate = $("sDate").value; updatePad(); } });
+  function key(k) {
+    if (k === "⌫") amtStr = amtStr.slice(0, -1);
+    else if (k === "000") { if (amtStr && amtStr.length <= 6) amtStr += "000"; }
+    else if (/^\d$/.test(k)) { if (amtStr === "0") amtStr = ""; if (amtStr.length < 9) amtStr += k; }
+    updatePad();
+  }
+  $("keypad").addEventListener("click", function (ev) { var b = ev.target.closest("button"); if (!b) return; buzz(4); key(b.textContent.trim()); });
+  document.addEventListener("keydown", function (ev) {
+    if (!sheetOpen || mode !== "pad") return;
+    if (ev.target.matches("input, textarea, select")) return;
+    if (/^\d$/.test(ev.key)) { key(ev.key); ev.preventDefault(); }
+    else if (ev.key === "Backspace") { key("⌫"); ev.preventDefault(); }
+    else if (ev.key === "Enter" && Number(amtStr) > 0) { $("sSave").click(); ev.preventDefault(); }
+    else if (ev.key === "Escape") closeSheet();
+  });
+  $("sSave").addEventListener("click", function () {
+    var n = Number(amtStr || 0); if (!(n > 0)) return;
+    var old = editingId ? items.get(editingId) : null, id = editingId || newId();
+    var body = { kind: "expense", amount: n, cat: selCat, note: $("sNote").value.trim(), date: selDate, month: selDate.slice(0, 7), createdAt: old ? old.createdAt : Date.now() };
+    if (old && old.fixed) body.fixed = true;
+    items.set(id, body); settings.lastCat = selCat; persist(); buzz(14);
+    if (curView === "muaji") viewMonth = body.month;
+    closeSheet(); renderAll();
+    if (old) toast("Ndryshimi u ruajt", { label: "Kthe", fn: function () { items.set(id, old); persist(); renderAll(); } });
+    else toast("−" + fmt(n) + " L · " + CAT[selCat].short, { label: "Kthe", fn: function () { items.delete(id); persist(); renderAll(); } });
+  });
+  $("sDelete").addEventListener("click", function () { var id = editingId; closeSheet(); setTimeout(function () { deleteWithUndo(id); }, 120); });
+
+  // ---------- Me tekst (lexuesi pa internet) ----------
   var RULES = [
     ["jashte",    /kafe|kafen|kapu[cç]in|makiato|restorant|pic[ae]|pizza|byrek|sufllaqe|sandui[cç]|fast\s?food|dark[eë]|drek[eë]|birr|koktej|glovo|wolt|bar\b|pije jasht/],
     ["fatura",    /drit[aë]?\b|oshee|fatur|ujesjell|\buji\b|internet|telefon|vodafone|\bone\b|abcom|digitalb|tring|rimbush|kart[eë] telefoni/],
@@ -754,70 +1200,49 @@ details.manual[open] summary::before { content: "− "; }
     ["transport", /karburant|naft[eë]|benzin|gaz p[eë]r makin|taksi|taxi|autobus|urban|parking|lavazh|makin|servis|bilet|goma|\bgas\b/],
     ["shendet",   /farmaci|ila[cç]|doktor|mjek|dentist|analiz|spital|vitamin|klinik/],
     ["veshje",    /rrob|veshj|k[eë]puc|xhaket|bluz|pantallon|fustan|parukier|berber|flok|kozmetik|parfum|thonj/],
-    ["argetim",   /kinema|film|koncert|pushim|hotel|udh[eë]tim|netflix|spotify|youtube|loj[eë]|palest[eë]r|gym|plazh|ditëlindj|ditelindj/],
-    ["familja",   /f[eë]mij|kopsht|shkoll|lod[eë]r|pampers|pelen|dhurat|libr/],
-    ["ushqim",    /market|supermarket|buk[eë]|qum[eë]sht|mish|perime|frut|ushqim|djath|vez[eë]|kos\b|sheqer|miell|vaj\b|ujë pije|uj[eë] p[eë]r pirje|spar|conad|big market|furr[eë]|pastiçeri|embelsir|ëmbëlsir/]
+    ["argetim",   /kinema|film|koncert|pushim|hotel|udh[eë]tim|netflix|spotify|youtube|loj[eë]|palest[eë]r|gym|plazh|dit[eë]lindj/],
+    ["familja",   /f[eë]mij|kopsht|shkoll|lod[eë]r|pampers|pelen|dhurat|libr|djal|vajz/],
+    ["ushqim",    /market|supermarket|buk[eë]|qum[eë]sht|mish|perime|frut|ushqim|djath|vez[eë]|kos\b|sheqer|miell|vaj\b|uj[eë] p[eë]r pirje|spar|conad|big market|furr[eë]|pasti[cç]eri|[eë]mb[eë]lsir|pazar|temu/]
   ];
-  var STOP = /\b(dje|sot|pardje|bleva|bler[eë]|pagova|pagesa|pagese|pagesë|dhash[eë]|shpenzova|p[eë]r|per|tek|te|n[eë]|ne|me|lek[eë]?|leke|lek|l|all|mij[eë]|mije|k|t[eë] vjetra|te vjetra|vjetra|euro|eur)\b/gi;
-
-  function guessCat(t) {
-    var s = t.toLowerCase();
-    for (var i = 0; i < RULES.length; i++) if (RULES[i][1].test(s)) return RULES[i][0];
-    return "tjeter";
-  }
-  function parseNumber(raw) {
-    if (/^\d{1,3}([.\s]\d{3})+$/.test(raw)) return parseFloat(raw.replace(/[.\s]/g, ""));
-    return parseFloat(raw.replace(",", "."));
-  }
+  var STOP = /\b(dje|sot|pardje|bleva|bler[eë]|pagova|pagesa|pagese|dhash[eë]|shpenzova|p[eë]r|per|tek|te|n[eë]|ne|me|lek[eë]?|leke|lek|l|all|mij[eë]|mije|k|t[eë] vjetra|te vjetra|vjetra|euro|eur)\b/gi;
+  function guessCat(t) { var s = t.toLowerCase(); for (var i = 0; i < RULES.length; i++) if (RULES[i][1].test(s)) return RULES[i][0]; return "tjeter"; }
+  function parseNumber(raw) { if (/^\d{1,3}([.\s]\d{3})+$/.test(raw)) return parseFloat(raw.replace(/[.\s]/g, "")); return parseFloat(raw.replace(",", ".")); }
   function parseText(text) {
     var now = new Date(), y = new Date(now); y.setDate(now.getDate() - 1);
     var y2 = new Date(now); y2.setDate(now.getDate() - 2);
-    var curDate = defaultDate(), out = [], salary = null;
-    var parts = text.split(/[,;\n]+|\s+dhe\s+|\.\s+|\s+edhe\s+/i);
-    parts.forEach(function (seg) {
+    var curDate = today(), out = [], salary = null;
+    text.split(/[,;\n]+|\s+dhe\s+|\.\s+|\s+edhe\s+/i).forEach(function (seg) {
       var s = seg.trim(); if (!s) return;
       var low = s.toLowerCase();
-      if (/\bpardje\b/.test(low)) curDate = iso(y2);
-      else if (/\bdje\b/.test(low)) curDate = iso(y);
-      else if (/\bsot\b/.test(low)) curDate = iso(now);
-      var m = s.match(/(\d{1,3}(?:[.\s]\d{3})+|\d+(?:[.,]\d+)?)\s*(mij[eë]|k\b)?/i);
-      if (!m) return;
-      var amt = parseNumber(m[1]);
-      if (m[2]) amt *= 1000;
+      if (/\bpardje\b/.test(low)) curDate = iso(y2); else if (/\bdje\b/.test(low)) curDate = iso(y); else if (/\bsot\b/.test(low)) curDate = iso(now);
+      var m = s.match(/(\d{1,3}(?:[.\s]\d{3})+|\d+(?:[.,]\d+)?)\s*(mij[eë]|k\b)?/i); if (!m) return;
+      var amt = parseNumber(m[1]); if (m[2]) amt *= 1000;
       if (/t[eë] vjetra|vjetra/.test(low)) amt = amt / 10;
       if (!(amt > 0)) return;
       if (/rrog/.test(low)) { salary = amt; return; }
       var foreign = /€|euro|\beur\b/.test(low) ? "EUR" : (/\$|dollar/.test(low) ? "USD" : null);
-      var noteTxt = s.replace(m[0], " ").replace(/[€$]/g, " ").replace(STOP, " ").replace(/\s+/g, " ").trim();
-      var cat = guessCat(s);
-      if (noteTxt) noteTxt = noteTxt.charAt(0).toUpperCase() + noteTxt.slice(1);
-      out.push({ amount: Math.round(amt * 100) / 100, cat: cat, note: noteTxt.slice(0, 120), date: curDate, foreign: foreign });
+      var nt = s.replace(m[0], " ").replace(/[€$]/g, " ").replace(STOP, " ").replace(/(^|\s)[ëçË](?=\s|$)/g, " ").replace(/\s+/g, " ").trim();
+      if (nt) nt = nt.charAt(0).toUpperCase() + nt.slice(1);
+      out.push({ amount: Math.round(amt * 100) / 100, cat: guessCat(s), note: nt.slice(0, 120), date: curDate, foreign: foreign });
     });
     return { salary: salary, expenses: out };
   }
-
   $("parseBtn").addEventListener("click", function () {
     var text = $("quickText").value.trim();
-    if (!text) { toast("Shkruaj fillimisht çfarë ke shpenzuar."); $("quickText").focus(); return; }
-    var r = parseText(text);
-    pending = r.expenses; pendingSalary = r.salary;
+    if (!text) { toast("Shkruaj fillimisht çfarë ke shpenzuar."); return; }
+    var r = parseText(text); pending = r.expenses; pendingSalary = r.salary;
     if (!pending.length && !pendingSalary) { toast("Nuk gjeta shuma. Provo p.sh. “kafe 150, market 2000”."); return; }
     showPreview();
   });
-
   function showPreview() {
     var box = $("preview");
     if (!pending.length && !pendingSalary) { box.hidden = true; $("previewActions").hidden = true; return; }
-    var h = pendingSalary ? "<div class=\"prow sal\"><span>Rroga e " + monthGen(viewMonth) + "</span><strong>" + fmt(pendingSalary) + " L</strong></div>" : "";
+    var h = pendingSalary ? '<div class="prow sal"><span>Rroga e ' + monthGen(cur()) + "</span><strong>" + fmt(pendingSalary) + " L</strong></div>" : "";
     h += pending.map(function (e, i) {
-      var opts = CATS.map(function (c) { return "<option value=\"" + c.id + "\"" + (c.id === e.cat ? " selected" : "") + ">" + esc(c.name) + "</option>"; }).join("");
-      return "<div class=\"prow\">" +
-        "<input type=\"number\" step=\"any\" min=\"0\" inputmode=\"decimal\" id=\"pA" + i + "\" value=\"" + e.amount + "\" aria-label=\"Shuma në lekë\">" +
-        "<input type=\"text\" id=\"pN" + i + "\" value=\"" + esc(e.note) + "\" aria-label=\"Përshkrimi\">" +
-        "<input type=\"date\" id=\"pD" + i + "\" value=\"" + e.date + "\" aria-label=\"Data\">" +
-        "<select id=\"pC" + i + "\" aria-label=\"Kategoria\">" + opts + "</select>" +
-        (e.foreign ? "<div class=\"warnline\">Shuma është në " + esc(e.foreign) + ". Ktheje në lekë para se ta ruash.</div>" : "") +
-        "</div>";
+      var o = CATS.map(function (c) { return '<option value="' + c.id + '"' + (c.id === e.cat ? " selected" : "") + ">" + esc(c.short) + "</option>"; }).join("");
+      return '<div class="prow"><input type="number" step="any" min="0" inputmode="decimal" id="pA' + i + '" value="' + e.amount + '" aria-label="Shuma"><input type="text" id="pN' + i + '" value="' + esc(e.note) + '" aria-label="Përshkrimi">' +
+        '<input type="date" id="pD' + i + '" value="' + e.date + '" aria-label="Data"><select id="pC' + i + '" aria-label="Kategoria">' + o + "</select>" +
+        (e.foreign ? '<div class="warnline">Shuma është në ' + esc(e.foreign) + ". Ktheje në lekë para se ta ruash.</div>" : "") + "</div>";
     }).join("");
     box.innerHTML = h; box.hidden = false;
     var tot = pending.reduce(function (s, e) { return s + e.amount; }, 0);
@@ -826,60 +1251,132 @@ details.manual[open] summary::before { content: "− "; }
   }
   $("cancelPreview").addEventListener("click", function () { pending = []; pendingSalary = null; showPreview(); });
   $("saveAll").addEventListener("click", function () {
-    if (pendingSalary) salaries.set(viewMonth, pendingSalary);
-    var saved = 0, totalAmt = 0, lastMonth = null;
+    if (pendingSalary) { salaries.set(cur(), pendingSalary); firstPaint = true; }
+    var saved = 0, totalAmt = 0;
     for (var i = 0; i < pending.length; i++) {
       var amount = parseFloat($("pA" + i).value), date = $("pD" + i).value;
       if (!(amount > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
       items.set(newId(), { kind: "expense", amount: amount, cat: $("pC" + i).value, note: $("pN" + i).value.trim(), date: date, month: date.slice(0, 7), createdAt: Date.now() + i });
-      saved++; totalAmt += amount; lastMonth = date.slice(0, 7);
+      saved++; totalAmt += amount;
     }
-    if (pendingSalary) firstPaint = true;
-    persist();
-    toast(saved ? "−" + fmt(totalAmt) + " L nga rroga (" + saved + " shpenzime)" : "Rroga u ruajt.");
+    persist(); buzz(14);
     pending = []; pendingSalary = null; showPreview(); $("quickText").value = "";
-    if (lastMonth && lastMonth !== viewMonth) viewMonth = lastMonth;
-    render();
+    closeSheet(); renderAll();
+    toast(saved ? "−" + fmt(totalAmt) + " L nga rroga (" + saved + " shpenzime)" : "Rroga u ruajt.");
   });
 
-  // ---------- shpenzimet bazë: veprimet ----------
-  var fCat = $("fCat");
-  fCat.innerHTML = CATS.map(function (c) { return "<option value=\"" + c.id + "\">" + esc(c.name) + "</option>"; }).join("");
-  $("fform").addEventListener("submit", function (ev) {
-    ev.preventDefault();
-    var amount = parseFloat($("fAmount").value), noteTxt = $("fNote").value.trim();
-    if (!(amount > 0) || !noteTxt) { toast("Shkruaj emrin dhe shumën."); return; }
-    fixed.push({ id: "f" + Date.now().toString(36), amount: amount, cat: fCat.value, note: noteTxt });
-    persist(); $("fform").reset(); render();
-    toast("U shtua te bazat. Nga muaji tjetër futet vetë.");
-  });
-  var fArmed = null, fArmT;
-  $("fixedList").addEventListener("click", function (ev) {
-    var b = ev.target.closest("[data-fdel]"); if (!b) return;
-    var id = b.getAttribute("data-fdel");
-    if (fArmed === id) {
-      fArmed = null; clearTimeout(fArmT);
-      fixed = fixed.filter(function (f) { return f.id !== id; }); persist(); render();
-      toast("U hoq nga bazat. Shpenzimet e muajve të kaluar mbeten.");
-      return;
+  // ================= Raporti si foto (#8) =================
+  var reportBlob = null, reportName = "";
+  function loadImg(src) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
+  function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  async function drawReport(m) {
+    try { await Promise.all([document.fonts.load('200px "Instrument Serif"'), document.fonts.load('italic 60px "Instrument Serif"'), document.fonts.load('600 32px "Onest"'), document.fonts.load('400 30px "Onest"')]); } catch (e) {}
+    var W = 1080, H = 1350, P = 84, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d"), SERIF = '"Instrument Serif", Georgia, serif', SANS = '"Onest", system-ui, sans-serif';
+    var g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#17304A"); g.addColorStop(1, "#0A1724"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    var rg = ctx.createRadialGradient(W * 0.86, 110, 0, W * 0.86, 110, 560); rg.addColorStop(0, "rgba(208,24,47,.5)"); rg.addColorStop(1, "rgba(208,24,47,0)"); ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    var logo = await loadImg("logo.png");
+    if (logo) { ctx.save(); rrect(ctx, P, P, 84, 84, 20); ctx.clip(); ctx.drawImage(logo, P, P, 84, 84); ctx.restore(); }
+    ctx.fillStyle = "#F3F6F9"; ctx.font = "64px " + SERIF; ctx.textBaseline = "alphabetic"; ctx.fillText("ALL", P + 108, P + 52);
+    ctx.fillStyle = "#93A6BA"; ctx.font = "600 21px " + SANS; try { ctx.letterSpacing = "3px"; } catch (e) {}
+    ctx.fillText("EXPENSES & SAVING", P + 110, P + 82); try { ctx.letterSpacing = "0px"; } catch (e) {}
+
+    var list = monthItems(m), spent = sum(list), sal = salaryFor(m), c = cur(), closed = m < c;
+    ctx.fillStyle = "#93A6BA"; ctx.font = "400 30px " + SANS; ctx.fillText("Raporti i muajit", P, 300);
+    ctx.fillStyle = "#F3F6F9"; ctx.font = "104px " + SERIF; ctx.fillText(monthName(m), P, 400);
+
+    var y = 500;
+    if (sal) {
+      var left = sal.amount - spent;
+      ctx.fillStyle = "#93A6BA"; ctx.font = "400 32px " + SANS;
+      ctx.fillText(left < 0 ? "Tejkalove rrogën me" : closed ? "Kurseve" : "Të mbetura deri tani", P, y);
+      ctx.fillStyle = left < 0 ? "#FF7A86" : "#F3F6F9"; ctx.font = "190px " + SERIF;
+      var big = fmt(Math.abs(left)); ctx.fillText(big, P - 6, y + 175);
+      var bw = ctx.measureText(big).width; ctx.fillStyle = "#93A6BA"; ctx.font = "italic 76px " + SERIF; ctx.fillText("lekë", P + bw + 14, y + 175);
+      ctx.font = "400 30px " + SANS; ctx.fillStyle = "#93A6BA"; ctx.fillText("nga " + fmt(sal.amount) + " L rrogë · shpenzove " + fmt(spent) + " L", P, y + 240);
+    } else {
+      ctx.fillStyle = "#93A6BA"; ctx.font = "400 32px " + SANS; ctx.fillText("Shpenzove", P, y);
+      ctx.fillStyle = "#F3F6F9"; ctx.font = "190px " + SERIF; var b2 = fmt(spent); ctx.fillText(b2, P - 6, y + 175);
+      ctx.fillStyle = "#93A6BA"; ctx.font = "italic 76px " + SERIF; ctx.fillText("lekë", P + ctx.measureText(b2).width + 14, y + 175);
     }
-    fArmed = id; b.classList.add("armed"); b.textContent = "Hiq?";
-    clearTimeout(fArmT); fArmT = setTimeout(function () { fArmed = null; b.classList.remove("armed"); b.textContent = "✕"; }, 3000);
-  });
-  $("applyFixedBtn").addEventListener("click", function () {
-    applyFixed(viewMonth); render();
-    toast("−" + fmt(fixedTotal()) + " L shpenzime bazë për " + monthName(viewMonth));
+    // shiriti
+    var sy = 800, sw = W - 2 * P, sh = 40, bc = byCat(list), cats = Object.keys(bc).sort(function (a, b) { return bc[b] - bc[a]; });
+    var base = Math.max(sal ? sal.amount : spent, spent) || 1, x = P;
+    ctx.save(); rrect(ctx, P, sy, sw, sh, 12); ctx.clip();
+    ctx.fillStyle = "rgba(255,255,255,.08)"; ctx.fillRect(P, sy, sw, sh);
+    ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 8;
+    for (var k = -sh; k < sw + sh; k += 22) { ctx.beginPath(); ctx.moveTo(P + k, sy + sh); ctx.lineTo(P + k + sh, sy); ctx.stroke(); }
+    cats.forEach(function (id) { var w = bc[id] / base * sw; ctx.fillStyle = (CAT[id] || CAT.tjeter).color; ctx.fillRect(x, sy, Math.max(4, w - 3), sh); x += w; });
+    ctx.restore();
+    // kategoritë kryesore
+    var ry = 905;
+    if (!cats.length) { ctx.fillStyle = "#93A6BA"; ctx.font = "400 32px " + SANS; ctx.fillText("Asnjë shpenzim këtë muaj.", P, ry + 20); }
+    cats.slice(0, 4).forEach(function (id, i) {
+      var yy = ry + i * 64, cc = CAT[id] || CAT.tjeter;
+      ctx.fillStyle = cc.color; rrect(ctx, P, yy - 22, 22, 22, 6); ctx.fill();
+      ctx.fillStyle = "#F3F6F9"; ctx.font = "400 32px " + SANS; ctx.fillText(cc.name, P + 40, yy);
+      ctx.textAlign = "right"; ctx.font = "600 32px " + SANS; ctx.fillText(fmt(bc[id]) + " L", W - P - 110, yy);
+      ctx.fillStyle = "#93A6BA"; ctx.font = "400 28px " + SANS; ctx.fillText(Math.round(bc[id] / (spent || 1) * 100) + "%", W - P, yy);
+      ctx.textAlign = "left";
+    });
+    // shifrat poshtë
+    var by = 1205; ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(P, by - 62); ctx.lineTo(W - P, by - 62); ctx.stroke();
+    var biggest = list.slice().sort(function (a, b) { return b.amount - a.amount; })[0];
+    var dimm = closed ? daysIn(m) : (m === c ? new Date().getDate() : daysIn(m));
+    var stats = [["Shpenzime", String(list.length)], ["Mesatarja në ditë", fmt(Math.round(spent / Math.max(1, dimm))) + " L"], ["Më i madhi", biggest ? fmt(biggest.amount) + " L" : "—"]];
+    stats.forEach(function (s, i) {
+      var sx = P + i * (sw / 3);
+      ctx.fillStyle = "#93A6BA"; ctx.font = "400 24px " + SANS; ctx.fillText(s[0], sx, by);
+      ctx.fillStyle = "#F3F6F9"; ctx.font = "600 36px " + SANS; ctx.fillText(s[1], sx, by + 48);
+    });
+    ctx.fillStyle = "rgba(147,166,186,.7)"; ctx.font = "400 22px " + SANS; ctx.fillText("Gjeneruar më " + (+today().slice(8)) + " " + MONTHS[new Date().getMonth()] + " " + new Date().getFullYear() + " · ALL", P, H - 44);
+    return new Promise(function (res) { cv.toBlob(function (b) { res(b); }, "image/png"); });
+  }
+  async function openReport() {
+    $("reportImg").removeAttribute("src");
+    $("reportTitle").textContent = "Raporti · " + monthName(viewMonth);
+    reportOpen = true; showLayer($("reportSheet"));
+    reportBlob = await drawReport(viewMonth); reportName = "ALL-raporti-" + viewMonth + ".png";
+    if (reportBlob) $("reportImg").src = URL.createObjectURL(reportBlob);
+  }
+  function closeReport() { if (!reportOpen) return; reportOpen = false; hideLayer($("reportSheet"), false); }
+  $("reportBtn").addEventListener("click", openReport);
+  $("reportClose").addEventListener("click", closeReport);
+  function saveReport() {
+    if (!reportBlob) return;
+    var a = document.createElement("a"); a.href = URL.createObjectURL(reportBlob); a.download = reportName;
+    document.body.appendChild(a); a.click(); a.remove(); toast("Fotoja u ruajt te Downloads.");
+  }
+  $("reportSave").addEventListener("click", saveReport);
+  $("reportShare").addEventListener("click", async function () {
+    if (!reportBlob) return;
+    var file = new File([reportBlob], reportName, { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: "Raporti · " + monthName(viewMonth) }); } catch (e) {}
+    } else saveReport();
   });
 
-  // ---------- start ----------
+  // ================= CSV =================
+  $("csvBtn").addEventListener("click", async function () {
+    var list = monthItems(viewMonth); if (!list.length) { toast("S'ka asgjë për të kopjuar këtë muaj."); return; }
+    var sal = salaryFor(viewMonth), run = sal ? sal.amount : 0, q = function (s) { return '"' + String(s).replace(/"/g, '""') + '"'; };
+    var csv = "Data,Kategoria,Përshkrimi,Shuma (L),Mbetur (L)\n" + list.slice().reverse().map(function (e) { run -= e.amount; return [e.date, q((CAT[e.cat] || CAT.tjeter).name), q(e.note || ""), e.amount, sal ? run : ""].join(","); }).join("\n");
+    try { await navigator.clipboard.writeText(csv); toast("CSV u kopjua. Ngjite në Excel ose Sheets."); }
+    catch (e) { toast("Kopjimi nuk u lejua në këtë pajisje."); }
+  });
+
+  // ================= Nisja =================
   load();
   if (!storageOk) note("Ky shfletues nuk lejon ruajtjen. Hape nga ikona ALL ose nga Chrome.");
-  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
   autoApplyFixed();
-  render();
+  route();
+  renderAll();
+  // rifresko kur kthehesh te aplikacioni (p.sh. ditë e re)
+  var lastDay = today();
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && today() !== lastDay) { lastDay = today(); autoApplyFixed(); route(); renderAll(); } });
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 })();
-
 </script>
 </body>
 </html>

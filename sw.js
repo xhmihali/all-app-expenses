@@ -1,6 +1,6 @@
 // ALL – Expenses & Saving · service worker
 // Online: merr versionin më të ri. Offline: hap kopjen e ruajtur.
-const CACHE = "all-app-v3";
+const CACHE = "all-app-v4";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./favicon.png"];
 
 self.addEventListener("install", (e) => {
