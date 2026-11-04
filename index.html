@@ -127,6 +127,12 @@ label.f { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
 .setup h3 { font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 1.1; margin: 6px 0 4px; text-wrap: balance; }
 .setup p { margin: 0; color: var(--hero-muted); font-size: 14px; max-width: 42ch; }
 
+/* ---------- Backup ---------- */
+.nag { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 16px; padding: 12px 14px; display: grid; gap: 10px; font-size: 14px; }
+.nag b { display: block; margin-bottom: 2px; }
+.nag span { color: var(--muted); }
+.linkbtn { background: none; border: 0; color: var(--hero-ink); text-decoration: underline; text-underline-offset: 3px; font-size: 14px; padding: 12px 0 0; cursor: pointer; opacity: .85; }
+
 /* ---------- Quick chips ---------- */
 .qchips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 4px; scroll-snap-type: x proximity; }
 .qchips::-webkit-scrollbar { display: none; }
@@ -333,6 +339,10 @@ textarea.tt { min-height: 110px; resize: none; }
 
   <!-- ================= SOT ================= -->
   <section class="view" id="v-sot" data-title="Sot">
+    <div class="nag" id="backupNag" hidden>
+      <div><b>Mbro të dhënat</b><span id="backupNagText"></span></div>
+      <div class="row"><button class="btn primary" type="button" id="nagShare">Ruaj në Drive</button><button class="btn ghost" type="button" id="nagLater">Më vonë</button></div>
+    </div>
     <div class="hero" id="hero">
       <div id="setup" class="setup" hidden>
         <div class="eyebrow" id="setupEyebrow">Fillimi i muajit</div>
@@ -342,6 +352,7 @@ textarea.tt { min-height: 110px; resize: none; }
           <input type="number" id="setupInput" min="0" step="100" inputmode="numeric" placeholder="p.sh. 85000" aria-label="Rroga në lekë">
           <button class="go" type="submit">Ruaj rrogën</button>
         </form>
+        <button class="linkbtn" type="button" id="setupImport">Ke një backup? Ngarko këtu</button>
       </div>
       <div id="state">
         <div class="herotop">
@@ -478,14 +489,16 @@ textarea.tt { min-height: 110px; resize: none; }
 
     <div class="card">
       <h2>Të dhënat <small id="dataInfo"></small></h2>
-      <p class="empty">Ruhen vetëm në këtë telefon. Bëj një backup herë pas here, sidomos para se të pastrosh Chrome-in ose të ndërrosh telefon.</p>
+      <p class="empty">Ruhen vetëm në këtë telefon. Ruaj një backup në Google Drive të paktën një herë në javë.</p>
+      <p class="empty" style="margin-top:8px"><b id="backupInfo"></b><br><span id="persistInfo"></span></p>
       <div class="row" style="margin-top:12px">
-        <button class="btn primary" type="button" id="exportBtn">Shkarko backup</button>
+        <button class="btn primary" type="button" id="shareBackupBtn">Ruaj në Drive</button>
+        <button class="btn" type="button" id="exportBtn">Shkarko</button>
         <label class="btn" for="importFile">Ngarko backup</label>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <input type="file" id="importFile" accept="application/json,.json,text/plain,.txt" hidden>
       </div>
     </div>
-    <p class="hint">ALL · Expenses &amp; Saving · v3</p>
+    <p class="hint">ALL · Expenses &amp; Saving · v3.1</p>
   </section>
 </div>
 
@@ -664,9 +677,7 @@ textarea.tt { min-height: 110px; resize: none; }
   function note(msg) { var n = $("note"); if (msg) { n.textContent = msg; n.hidden = false; } else n.hidden = true; }
 
   // ================= Ruajtja në telefon =================
-  function load() {
-    try {
-      var raw = localStorage.getItem(KEY); if (!raw) return;
+  function applyRaw(raw) {
       var d = JSON.parse(raw);
       items = new Map(Object.entries(d.items || {}));
       salaries = new Map(Object.entries(d.salaries || {}));
@@ -674,13 +685,30 @@ textarea.tt { min-height: 110px; resize: none; }
       fixedApplied = d.fixedApplied || {};
       goals = Array.isArray(d.goals) ? d.goals : [];
       settings = d.settings || {};
-    } catch (e) { storageOk = false; }
+  }
+  function load() {
+    try { var raw = localStorage.getItem(KEY); if (raw) applyRaw(raw); }
+    catch (e) { storageOk = false; }
+  }
+  // Kopje e dytë brenda telefonit (IndexedDB), për rastin kur fshihet vetëm localStorage
+  function idbOpen() {
+    return new Promise(function (res, rej) {
+      if (!window.indexedDB) return rej(new Error("no idb"));
+      var r = indexedDB.open("all-expenses", 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore("kv"); };
+      r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); };
+    });
+  }
+  function idbPut(raw) { idbOpen().then(function (db) { db.transaction("kv", "readwrite").objectStore("kv").put(raw, "data"); }).catch(function () {}); }
+  function idbGet() {
+    return idbOpen().then(function (db) { return new Promise(function (res) { var q = db.transaction("kv").objectStore("kv").get("data"); q.onsuccess = function () { res(q.result || null); }; q.onerror = function () { res(null); }; }); }).catch(function () { return null; });
   }
   function snapshot() {
     return { v: 3, savedAt: new Date().toISOString(), items: Object.fromEntries(items), salaries: Object.fromEntries(salaries), fixed: fixed, fixedApplied: fixedApplied, goals: goals, settings: settings };
   }
   function persist() {
-    try { localStorage.setItem(KEY, JSON.stringify(snapshot())); return true; }
+    var raw = JSON.stringify(snapshot()); idbPut(raw);
+    try { localStorage.setItem(KEY, raw); return true; }
     catch (e) { storageOk = false; note("Telefoni nuk e lejoi ruajtjen. Shkarko një backup që të mos humbasësh të dhënat."); return false; }
   }
 
@@ -1110,6 +1138,8 @@ textarea.tt { min-height: 110px; resize: none; }
       return '<div class="cat"><span class="dot" style="background:' + cc.color + '"></span><span>' + esc(f.note || cc.name) + '<span class="pc">' + esc(cc.name) + '</span></span><span class="famt">' + fmt(f.amount) + ' L<button type="button" class="fdel" data-fdel="' + esc(f.id) + '" aria-label="Hiq nga bazat">✕</button></span></div>';
     }).join("") : '<p class="empty">Ende pa shpenzime bazë. Shto qiranë, kredinë, faturat…</p>';
     $("dataInfo").textContent = items.size ? items.size + " shpenzime gjithsej" : "";
+    renderBackupInfo();
+    try { if (navigator.storage && navigator.storage.persisted) navigator.storage.persisted().then(function (p) { $("persistInfo").textContent = p ? "Ruajtja e mbrojtur nga pastrimi automatik: aktive." : "Ruajtja e mbrojtur nga pastrimi automatik: jo aktive (instaloje si aplikacion)."; }); } catch (e) {}
   }
   $("salaryForm").addEventListener("submit", function (ev) {
     ev.preventDefault();
@@ -1139,13 +1169,36 @@ textarea.tt { min-height: 110px; resize: none; }
   });
 
   // backup
-  $("exportBtn").addEventListener("click", function () {
-    var d = snapshot(); d.app = "ALL – Expenses & Saving"; d.exportedAt = new Date().toISOString();
-    var blob = new Blob([JSON.stringify(d, null, 1)], { type: "application/json" });
+  function backupText() { var d = snapshot(); d.app = "ALL – Expenses & Saving"; d.exportedAt = new Date().toISOString(); return JSON.stringify(d, null, 1); }
+  function markBackup() { settings.lastBackup = Date.now(); persist(); renderBackupInfo(); }
+  function downloadBackup() {
+    var blob = new Blob([backupText()], { type: "application/json" });
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "ALL-backup-" + today() + ".json";
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
-    toast("Backup-i u shkarkua te Downloads.");
-  });
+    markBackup(); toast("Backup-i u shkarkua te Downloads.");
+  }
+  async function shareBackup() {
+    var txt = backupText(), name = "ALL-backup-" + today();
+    var cands = [new File([txt], name + ".json", { type: "application/json" }), new File([txt], name + ".txt", { type: "text/plain" })];
+    var f = null;
+    if (navigator.canShare) for (var i = 0; i < cands.length; i++) { try { if (navigator.canShare({ files: [cands[i]] })) { f = cands[i]; break; } } catch (e) {} }
+    if (!f) { downloadBackup(); return; }
+    try { await navigator.share({ files: [f], title: "ALL backup " + today() }); markBackup(); toast("Backup-i u dërgua. Zgjidh Google Drive që ta kesh gjithmonë."); }
+    catch (e) { if (e && e.name !== "AbortError") downloadBackup(); }
+  }
+  function daysSince(ts) { return ts ? Math.floor((Date.now() - ts) / 864e5) : null; }
+  function renderBackupInfo() {
+    var d = daysSince(settings.lastBackup);
+    $("backupInfo").textContent = d === null ? "Ende pa backup." : d === 0 ? "Backup-i i fundit: sot." : "Backup-i i fundit: " + d + " ditë më parë.";
+    var show = items.size > 0 && (d === null || d >= 7) && !(settings.nagUntil && Date.now() < settings.nagUntil);
+    $("backupNag").hidden = !show;
+    if (show) $("backupNagText").textContent = d === null ? "Ende nuk ke bërë asnjë backup. Ruaje në Google Drive me një prekje, që të mos humbasësh asgjë." : "Backup-i i fundit është " + d + " ditë i vjetër. Ruaj një të ri në Google Drive.";
+  }
+  $("exportBtn").addEventListener("click", downloadBackup);
+  $("shareBackupBtn").addEventListener("click", shareBackup);
+  $("nagShare").addEventListener("click", shareBackup);
+  $("nagLater").addEventListener("click", function () { settings.nagUntil = Date.now() + 2 * 864e5; persist(); renderBackupInfo(); });
+  $("setupImport").addEventListener("click", function () { $("importFile").click(); });
   $("importFile").addEventListener("change", function (ev) {
     var f = ev.target.files && ev.target.files[0]; if (!f) return;
     var r = new FileReader();
@@ -1434,6 +1487,15 @@ textarea.tt { min-height: 110px; resize: none; }
   autoApplyFixed();
   route();
   renderAll();
+  if (!items.size && !salaries.size) {
+    idbGet().then(function (raw) {
+      if (!raw) return;
+      try { applyRaw(raw); } catch (e) { return; }
+      if (!items.size && !salaries.size) return;
+      persist(); firstPaint = true; autoApplyFixed(); renderAll();
+      toast("Të dhënat u rikthyen nga kopja e brendshme e telefonit.");
+    });
+  }
   // rifresko kur kthehesh te aplikacioni (p.sh. ditë e re)
   var lastDay = today();
   document.addEventListener("visibilitychange", function () { if (!document.hidden && today() !== lastDay) { lastDay = today(); autoApplyFixed(); route(); renderAll(); } });
